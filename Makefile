@@ -5,13 +5,13 @@ include .config/colors.mk
 OBJS	=	$(SRCS:%.cpp=${OBJ_D}%.o)
 SRC_D	=	srcs/
 OBJ_D	=	.objs/
-NAME	=	ft_irc
+NAME	=	ircserv
 CC		=	c++
 CFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g3
 DFLAGS	=	-MMD -MF $(@:.o=.d)
 
 AUTHORS	=	mpitot, gberthol, mbrousse
-DEBUT	=	21/10/2024
+DEBUT	=	20/01/2025
 FIN		=	...
 
 all		:	header .internal_separate1 ${NAME}
@@ -31,6 +31,8 @@ ${NAME}	:	${OBJ_D} ${OBJS}
 
 ${OBJ_D}:
 	@mkdir -p ${OBJ_D}
+	@mkdir -p ${OBJ_D}/client
+	@mkdir -p ${OBJ_D}/server
 
 clean	:
 	@echo "Cleaning $(WHITE)[$(RED)$(NAME)$(WHITE)]...$(DEFAULT)"

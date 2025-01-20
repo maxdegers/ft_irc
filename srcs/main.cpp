@@ -1,7 +1,25 @@
+#include <csignal>
 #include <iostream>
+#include <string>
+#include "Server.hpp"
+#include "Client.hpp"
 
-int main(void)
+int main(int ac, char **av, char **env)
 {
-	std::cout << "Hello World" << std::endl;
-	return (0);
+	(void) ac;
+	(void) av;
+	(void) env;
+	Server	server;
+
+	try
+	{
+		signal(SIGINT, Server::signalHandler);
+		signal(SIGQUIT, Server::signalHandler);
+		server.init(4242);
+		server.run();
+	}
+	catch (std::runtime_error &e)
+	{
+		std::cerr << "error: " << e.what() << std::endl;
+	}
 }
