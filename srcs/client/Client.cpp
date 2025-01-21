@@ -33,15 +33,31 @@ std::string Client::ip() const
 	return (_ip);
 }
 
+std::string Client::status() const
+{
+	return (_status);
+}
+
 /* Setters ****************************************************************** */
 void Client::setFD(int fd)
 {
 	_fd = fd;
 }
 
-void Client::setIP(std::string ip)
+void Client::setIP(const std::string &ip)
 {
 	_ip = ip;
 }
 
+void Client::setStatus(const std::string &status)
+{
+	_status = status;
+}
+
 /* Methods ****************************************************************** */
+
+void Client::sendError(const int fd, const std::string &error)
+{
+	const char *err = error.c_str();
+	send(fd, err, strlen(err), 0);
+}
