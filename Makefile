@@ -33,6 +33,7 @@ ${OBJ_D}:
 	@mkdir -p ${OBJ_D}
 	@mkdir -p ${OBJ_D}/client
 	@mkdir -p ${OBJ_D}/server
+	@mkdir -p ${OBJ_D}/logs
 
 clean	:
 	@echo "Cleaning $(WHITE)[$(RED)$(NAME)$(WHITE)]...$(DEFAULT)"

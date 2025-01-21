@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Log.hpp"
 
 #include <iostream>
 #include <vector> //-> for vector
@@ -26,6 +27,7 @@ Server::Server(const Server &src)
 Server::~Server()
 {
 	closeFDs();
+	Log::info("Server is down.");
 }
 
 /* Operators **************************************************************** */
@@ -90,8 +92,7 @@ void	Server::init(int port)
 	newPoll.revents = 0;
 	_fds.push_back(newPoll);
 
-	//TODO log "server connected"
-	std::cout << "Server connected" << std::endl << "Waiting to accept a connection" << std::endl;
+	Log::info("Server is up !");
 }
 
 void	Server::run()
@@ -124,20 +125,19 @@ void Server::acceptClient()
 	int incofd = accept(_socketFD, (sockaddr *)&(clientAddr), &len);
 	if (incofd < 0)
 	{
-		//TODO log accept failed
+		Log::error("Client was not accepted");
 		return ;
 	}
 	newPoll.fd = incofd;
 	newPoll.events = POLLIN;
 	newPoll.revents = 0;
 
-	client.setFD(incofd);
+	client.setFD(incofd);		//TODO put everything in the constructor
 	client.setIP(inet_ntoa(clientAddr.sin_addr));
 	_clients.push_back(client);
 	_fds.push_back(newPoll);
 
-	std::cout << "client accepted" << std::endl;
-	//TODO log client accepted
+	Log::info("Client accepted");
 }
 
 void Server::readData(int fd)
@@ -148,14 +148,14 @@ void Server::readData(int fd)
 	ssize_t	bytes = recv(fd, buff, sizeof(buff) - 1, 0);
 	if (bytes <= 0)
 	{
-		//TODO log client disconnected
+		Log::info("Client disconnected");
 		destroy(fd);
 		close(fd);
 	}
 	else
 	{
 		buff[bytes] = '\0';
-		//TODO log client sent data
+		Log::info("Data received from client");
 
 		//
 		//TODO handle command
