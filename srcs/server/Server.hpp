@@ -20,6 +20,7 @@ public:
 /* Getters */
 	int port() const;
 	int socketFD() const;
+	std::string getPassword();
 	std::vector<Client> clients() const;
 	//TODO faire une methode de recherche de client par son fd (voir fonction destroy)
 	std::vector<struct ::pollfd> fds() const;
@@ -37,6 +38,7 @@ public:
 	void	destroy(int fd);
 
 private:
+	std::string					_password;
 	int							_port;
 	int							_socketFD;
 	static bool					_signal;

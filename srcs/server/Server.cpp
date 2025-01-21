@@ -60,6 +60,11 @@ std::vector<struct ::pollfd> Server::fds() const
 	return _fds;
 }
 
+std::string Server::getPassword()
+{
+	return _password;
+}
+
 /* Methods ****************************************************************** */
 void	Server::init(int port)
 {
@@ -116,7 +121,6 @@ void	Server::run()
 
 void Server::acceptClient()
 {
-	Client				client;
 	struct sockaddr_in	clientAddr;
 	struct pollfd		newPoll;
 	socklen_t			len = sizeof(clientAddr);
@@ -131,7 +135,7 @@ void Server::acceptClient()
 	newPoll.events = POLLIN;
 	newPoll.revents = 0;
 
-	client.setFD(incofd);
+	Client				client(incofd, this);
 	client.setIP(inet_ntoa(clientAddr.sin_addr));
 	_clients.push_back(client);
 	_fds.push_back(newPoll);
