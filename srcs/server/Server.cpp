@@ -194,8 +194,49 @@ void Server::readData(int fd)
 
 void Server::executeCommand(const std::string &completeCommand, Client *client)
 {
-	(void) completeCommand;
-	(void) client;
+	std::string	command;
+	std::string	args;
+
+	command = completeCommand.substr(0, completeCommand.find(' '));
+	args = completeCommand.substr(completeCommand.find(' '), std::string::npos);
+	if (client->status() == NOT_REGISTERED)
+	{
+		switch (command)
+		{
+			case "PASS":
+				client->PASS(args);
+			default:
+				//TODO renvoyer une erreur (err 808)
+		}
+	}
+	// else if (client->status() == ONGOING_REGISTERING)
+	// {
+	// 	switch (command)
+	// 	{
+	// 		case "USER":
+	// 			client->USER(args);
+	// 		case "NICK":
+	// 			client->NICK(args);
+	// 		default:
+	// 			//TODO renvoyer une erreur (ou pas)
+	// 	}
+	// }
+	// else // client->status == REGISTERED
+	// {
+	// 	switch (command)
+	// 	{
+	// 		case "KICK":
+	// 			channel->KICK(args);
+	// 		case "TOPIC":
+	// 			channel->TOPIC(args);
+	// 		case "MODE":
+	// 			channel->MODE(args);
+	// 		case "JOIN":
+	// 			channel->JOIN(args);
+	// 		default:
+	// 			//TODO renvoyer une erreur (ou pas)
+	// 	}
+	// }
 }
 
 Client *Server::findClient(int fd)
@@ -206,6 +247,18 @@ Client *Server::findClient(int fd)
 			return (&_clients[i]);
 	}
 	return (NULL);
+}
+
+bool Server::checkNick(const std::string& nick)
+{
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].nickname() == nick)
+		{
+			return (true);
+		}
+	}
+	return (false);
 }
 
 void Server::signalHandler(int sig)
