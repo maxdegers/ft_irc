@@ -142,32 +142,53 @@ void Server::acceptClient()
 
 void Server::readData(int fd)
 {
+	Client	*client = findClient(fd);
 	char	buff[1024];
+	std::string string;
 	memset(buff, 0, sizeof(buff));
 
+	if (!client->incompleteMessage().empty())
+	{
+		string = client->incompleteMessage();
+		client->setIncompleteMessage("");
+	}
 	ssize_t	bytes = recv(fd, buff, sizeof(buff) - 1, 0);
 	if (bytes <= 0)
 	{
 		Log::info("Client disconnected");
 		destroy(fd);
 		close(fd);
+		return ;
 	}
-	else
-	{
-		buff[bytes] = '\0';
-		Log::info("Data received from client");
+	buff[bytes] = '\0';
+	Log::info("Data received from client");
 
-		//
-		//TODO handle command
-		//
+	string += buff;
+	if (string.find('\n') == std::string::npos)
+	{
+		client->setIncompleteMessage(string);
+		return ;
 	}
+	std::cout << "FULL MSG: " << string;
 }
 
+Client *Server::findClient(int fd)
+{
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].fd() == fd)
+			return (&_clients[i]);
+	}
+	return (NULL);
+}
 
 void Server::signalHandler(int sig)
 {
 	if (sig == SIGINT || sig == SIGQUIT)
+	{
 		_signal = true;
+		std::cout << std::endl;
+	}
 }
 
 void Server::closeFDs()

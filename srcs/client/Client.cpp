@@ -33,6 +33,11 @@ std::string Client::ip() const
 	return (_ip);
 }
 
+std::string Client::incompleteMessage() const
+{
+	return (_incompleteMessage);
+}
+
 /* Setters ****************************************************************** */
 void Client::setFD(int fd)
 {
@@ -42,6 +47,11 @@ void Client::setFD(int fd)
 void Client::setIP(std::string ip)
 {
 	_ip = ip;
+}
+
+void Client::setIncompleteMessage(std::string msg)
+{
+	_incompleteMessage = msg;
 }
 
 /* Methods ****************************************************************** */

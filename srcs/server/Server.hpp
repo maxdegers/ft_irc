@@ -25,16 +25,18 @@ public:
 	std::vector<struct ::pollfd> fds() const;
 
 /* Methods */
-	void	init(int port);
-	void	run();
+	void			init(int port);
+	void			run();
 
-	void	acceptClient();
-	void	readData(int fd);
+	void			acceptClient();
+	void			readData(int fd);
 
-	static void	signalHandler(int sig);
+	Client			*findClient(int fd);
 
-	void	closeFDs();
-	void	destroy(int fd);
+	static void		signalHandler(int sig);
+
+	void			closeFDs();
+	void			destroy(int fd);
 
 private:
 	int							_port;
