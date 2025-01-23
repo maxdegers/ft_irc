@@ -8,7 +8,15 @@
 #define ERR_NOTREGISTRED(target) ":irc_server 451 " + (target) + " :Register first.\n"
 #define ERR_PWNOTCHECK ":irc_server 808 :You must send PASS before any command\n"
 #define ERR_PASSWDMISMATCH ":irc_server 464 :Password incorrect\n"
-#define RPL_WELCOME(client, nick) (":irc_server 001 " + (client) + " :Welcome to the Irection Server, " + (nick) + " \n" )
+#define RPL_WELCOME(client, nick) (":irc_server 001 " + (client) + " :Welcome to the Internet Relay Chat Server, " + (nick) + " \n" )
+
+//Part
+#define RPL_PART(nick, channel, msg) (":" + (nick) + " PART " + (channel) + " " + (msg) + "\n")
+
+//Privmsg
+#define ERR_NOSUCHNICK(client , nick) (":irc_server 401 " + (client) + " " + (nick) + " :No such nick\n")
+#define ERR_NOTEXTTOSEND(client) (":irc_server 412 " + (client) + " :No text to send\n")
+#define RPL_PRIVMSG(client, nick, msg) (":" + (client) + " PRIVMSG " + (nick) + " " + (msg) + "\n")
 
 //Nickname
 #define ERR_NONICKNAMEGIVEN ":irc_server 431 :No nickname given\n"
@@ -17,12 +25,13 @@
 #define RPL_NICK(old, new_nick) (":" + (old) + " NICK " + (new_nick) + "\n")
 #define RPL_PRENICK(prefix, new_nick) (":" + (prefix) + " NICK " + (new_nick) + "\n")
 
-//Part
-#define RPL_PART(nick, channel, msg) (":" + (nick) + " PART " + (channel) + " " + (msg) + "\n")
-
 //Kick
 #define ERR_USERNOTINCHANNEL(nick, channel, target) (":irc_server 441 " + (nick) + " " + (channel) + " " + (target) + " :They aren't on that channel\n")
 #define RPL_KICKED(client, channel, kicked) (":" + (client) + " KICK " + (channel) + " " + (kicked) + "\n")
+
+//Who
+#define RPL_WHOREPLY(who) (":irc_server 352 " + (who) + "\n")
+#define RPL_ENDOFWHO(nick, channel) (":irc_server 315 " + (nick) + " " + (channel) + " :End of WHO list\n")
 
 //Mode
 #define ERR_UNKNOWNMODE(nick, channel, c) (":irc_server 472 "+ (nick) + " " + (channel) + " " + (c) + " :is unknown mode char to me\r\n")
@@ -31,10 +40,6 @@
 #define RPL_MODE(channel, nick, message) (":" + (nick) + " MODE " + (channel) + (message))
 #define RPL_OMODE(channel, nick, message, nick2) (":" + (nick) + " MODE " + (channel) + (message) + (nick2) + " \n")
 #define RPL_LMODE(channel, nick, message, number) (":" + (nick) + " MODE " + (channel) + (message) + (number) + "\n")
-
-//Who
-#define RPL_WHOREPLY(who) (":irc_server 352 " + (who) + "\n")
-#define RPL_ENDOFWHO(nick, channel) (":irc_server 315 " + (nick) + " " + (channel) + " :End of WHO list\n")
 
 //Invite
 #define RPL_INVITING(client, nick, channel) (":irc_server 341 " + (client) + " " + (nick) + " " + (channel) + "\n")
@@ -50,6 +55,7 @@
 #define RPL_TOPIC(client, channel, topic) (":irc_server 332 " + (client) + " " + (channel) + " :" + (topic) + "\n")
 #define RPL_TOPICWHOTIME(client, channel, nick, setat) (":irc_server 333 " + (client) + " " + (channel) + " " + (nick) + " " + (setat) + "\n")
 #define RPL_CHANGETOPIC(client, channel, topic) (":" + (client) + " TOPIC " + (channel) + " " + (topic) + "\n")
+#define ERR_BADCHANMASK(channel) (":irc_server 476 " + (channel) + " :Bad Channel Mask\n")
 
 //Join
 #define RPL_JOIN(nick, channel) (":" + (nick) + " JOIN " + (channel) + "\n")
@@ -58,9 +64,3 @@
 #define ERR_BADCHANNELKEY(client, channel) (":irc_server 475 " + (client) + " " + (channel) + " :Cannot join channel (+k)\n")
 #define RPL_ENDOFNAMES(nick, channel) (":irc_server 366 " + (nick) + " " + (channel) + " :End of /NAMES list\n")
 #define ERR_CHANNELISFULL(client, channel) (":irc_server 471 " + (client) + " " + (channel) + " :Cannot join channel (+l)" + "\r\n")
-#define ERR_BADCHANMASK(channel) (":irc_server 476 " + (channel) + " :Bad Channel Mask\n")
-
-//Privmsg
-#define ERR_NOSUCHNICK(client , nick) (":irc_server 401 " + (client) + " " + (nick) + " :No such nick\n")
-#define ERR_NOTEXTTOSEND(client) (":irc_server 412 " + (client) + " :No text to send\n")
-#define RPL_PRIVMSG(client, nick, msg) (":" + (client) + " PRIVMSG " + (nick) + " " + (msg) + "\n")

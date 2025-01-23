@@ -32,8 +32,8 @@ t_status status() const;
 
 /* Methods */
 
-	void	PASS(std::string cmd, std::string str);
-	// void	NICK(std::string cmd, std::string str);
+	void	PASS(const std::string &str);
+	void	NICK(const std::string &str);
 	// void	USER(std::string cmd, std::string str);
 
 	void	sendError(const int fd, const std::string &error);
@@ -42,9 +42,9 @@ private:
 	Server			*_server;
 	int				_fd;
 	t_status		_status;
-	std::string		_password;
 	std::string		_ip;
 	std::string		_nickname;
+	std::string		_prefix;
 	std::string		_username;
 	std::string		_realname;
 	std::string		_hostname;

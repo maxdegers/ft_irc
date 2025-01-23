@@ -48,16 +48,15 @@ void Client::sendError(const int fd, const std::string &error)
 }
 
 
-void	Client::PASS(std::string cmd ,std::string str)
+void	Client::PASS(const std::string &str)
 {
 	std::string error;
-
 
 	if (this->_status > NOT_REGISTERED)
 		error = ERR_ALREADYREGISTRED(this->_nickname);
 
-	if (this->_password.empty() || error.empty())
-		error = ERR_NEEDMOREPARAMS(cmd);
+	if (str.empty() || error.empty())
+		error = ERR_NEEDMOREPARAMS("PASS");
 
 	if (str.compare(this->_server->getPassword()) || error.empty())
 		error = ERR_PASSWDMISMATCH;
@@ -67,3 +66,42 @@ void	Client::PASS(std::string cmd ,std::string str)
 
 	this->_status = ONGOING_REGISTERING;
 }
+
+void	Client::NICK(const std::string &str)
+{
+	if (status() == NOT_REGISTERED)
+		return (sendError(_fd, ERR_PWNOTCHECK));
+	if (str.empty())
+		return (sendError(_fd, ERR_NONICKNAMEGIVEN));
+	
+	std::string charset = "=#&:";
+
+
+	for (int i = 0; str[i]; ++i) {
+		if (std::string::npos != charset.find(str[i]) || iswspace(str[i]) || (i == 0 && isdigit(str[i]))) //TODO to endestend
+			return (sendError(_fd, ERR_ERRONEUSNICKNAME(str)));
+	}
+	// if ("bot" == str)
+	// 	return (sendError(_fd, ERR_NICKNAMEINUSE(str))); //TODO ADD IF BONUS
+	
+	
+	if (_server.checkNick(str)) //TODO checkNick
+		return (sendError(_fd, ERR_NICKNAMEINUSE(str)));
+	
+	if (!_nickname.empty()) {
+		sendMessage(RPL_PRENICK(_prefix, str)); //TODO SandMessage to server
+		sendMessage(RPL_NICK(_nickname, str)); //TODO SandMessage to server
+		_nickname = str;
+		_prefix = _nickname + "!" + _username + "@" + _hostname; //TODO to endestend prefix
+		return ;
+	}
+
+	_nickname = str;
+	
+	if (!_username.empty()) {
+		_prefix = _nickname + "!" + _username + "@" + _hostname;
+		_status = REGISTERED;
+		return (sendError(_fd, RPL_WELCOME(_nickname, _nickname)));
+	}
+}
+
