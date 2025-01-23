@@ -1,4 +1,7 @@
 #include "Client.hpp"
+#include <cstring>
+#include <arpa/inet.h>
+#include "Define.hpp"
 
 /* Constructors ************************************************************* */
 Client::Client(int fd, const std::string &ip, Server *serv) : _server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip) {}
@@ -38,7 +41,6 @@ void Client::setStatus(const t_status &status)
 }
 
 /* Methods ****************************************************************** */
-
 void Client::sendError(const int fd, const std::string &error)
 {
 	const char *err = error.c_str();

@@ -1,25 +1,27 @@
 #include <csignal>
 #include <iostream>
-#include <string>
 #include "Server.hpp"
-#include "Client.hpp"
+#include "Log.hpp"
 
-int main(int ac, char **av, char **env)
+int main(int ac, char **av)
 {
-	(void) ac;
-	(void) av;
-	(void) env;
 	Server	server;
 
 	try
 	{
 		signal(SIGINT, Server::signalHandler);
 		signal(SIGQUIT, Server::signalHandler);
-		server.init(4242);
+		server.initArguments(ac, av);
+		server.init();
 		server.run();
+	}
+	catch (Server::ArgumentsErrorException &e)
+	{
+		Log::error(e.what());
+		Log::info("Usage: ./ircserv <PORT> <PASSWORD>");
 	}
 	catch (std::runtime_error &e)
 	{
-		std::cerr << "error: " << e.what() << std::endl;
+		Log::error(e.what());
 	}
 }

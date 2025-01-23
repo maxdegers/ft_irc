@@ -21,7 +21,6 @@ public:
 	static void error(const std::string &message);
 
 private:
-	static std::string getTimeStamp();
 	static std::string levelToString(logLevel lvl);
 };
 

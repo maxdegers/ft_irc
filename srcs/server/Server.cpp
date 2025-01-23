@@ -12,6 +12,7 @@
 #include <poll.h> //-> for poll()
 #include <csignal> //-> for signal()
 #include <cstring>
+#include <sstream>
 
 /* Statics ****************************************************************** */
 bool	Server::_signal = false;
@@ -27,7 +28,6 @@ Server::Server(const Server &src)
 Server::~Server()
 {
 	closeFDs();
-	Log::info("Server is down.");
 }
 
 /* Operators **************************************************************** */
@@ -68,12 +68,27 @@ std::string Server::getPassword()
 }
 
 /* Methods ****************************************************************** */
-void	Server::init(int port)
+void Server::initArguments(int ac, char** av)
 {
-	// port init
-	_port = port;
+	if (ac != 3)
+		throw (ArgumentsErrorException());
 
-	// socket init
+	int					port;
+	std::stringstream	ss(av[1]);
+
+	ss >> port;
+	if (!ss.eof() || ss.fail())
+		throw (ArgumentsErrorException());
+
+	if (port < 1024 || port > 65535)
+		throw (ArgumentsErrorException());
+
+	_port = port;
+	_password = av[2];
+}
+
+void	Server::init()
+{
 	struct sockaddr_in addr;
 	struct pollfd newPoll;
 	addr.sin_family = AF_INET;
@@ -118,6 +133,7 @@ void	Server::run()
 			}
 		}
 	}
+	Log::info("Server is down.");
 }
 
 void Server::acceptClient()
@@ -176,6 +192,12 @@ void Server::readData(int fd)
 	// TODO complete command = string
 }
 
+void Server::executeCommand(const std::string &completeCommand, Client *client)
+{
+	(void) completeCommand;
+	(void) client;
+}
+
 Client *Server::findClient(int fd)
 {
 	for (size_t i = 0; i < _clients.size(); i++)
@@ -219,4 +241,10 @@ void Server::destroy(int fd)
 			break;
 		}
 	}
+}
+
+/* Exceptions *************************************************************** */
+const char* Server::ArgumentsErrorException::what() const throw()
+{
+	return ("argument error");
 }

@@ -26,11 +26,13 @@ public:
 	std::vector<struct ::pollfd> fds() const;
 
 /* Methods */
-	void			init(int port);
+	void			initArguments(int ac, char **av);
+	void			init();
 	void			run();
 
 	void			acceptClient();
 	void			readData(int fd);
+	void			executeCommand(const std::string &completeCommand, Client *client);
 
 	Client			*findClient(int fd);
 
@@ -38,6 +40,13 @@ public:
 
 	void			closeFDs();
 	void			destroy(int fd);
+
+/* Exceptions */
+	class ArgumentsErrorException : public std::exception
+	{
+	public:
+		virtual const char *what() const throw();
+	};
 
 private:
 	std::string					_password;

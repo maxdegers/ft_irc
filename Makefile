@@ -74,7 +74,7 @@ leak: all .internal_separate3
 					--show-mismatched-frees=yes	\
 					--read-var-info=yes			\
 					--leak-check=full			\
-					./$(NAME)
+					./$(NAME) "4242" "1234"
 
 re		:	header .internal_separate1 fclean .internal_separate2 ${NAME}
 

@@ -2,13 +2,8 @@
 # define CLIENT_HPP
 
 # include <string>
-
 # include <iostream>
-# include <cstring>
-# include <arpa/inet.h>
-# include "Define.hpp"
-
-#include "Server.hpp"
+# include "Server.hpp"
 
 class Server;
 
