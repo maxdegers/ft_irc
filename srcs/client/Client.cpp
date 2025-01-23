@@ -38,6 +38,11 @@ std::string Client::status() const
 	return (_status);
 }
 
+std::string Client::incompleteMessage() const
+{
+	return (_incompleteMessage);
+}
+
 /* Setters ****************************************************************** */
 void Client::setFD(int fd)
 {
@@ -47,6 +52,11 @@ void Client::setFD(int fd)
 void Client::setIP(const std::string &ip)
 {
 	_ip = ip;
+}
+
+void Client::setIncompleteMessage(std::string msg)
+{
+	_incompleteMessage = msg;
 }
 
 void Client::setStatus(const std::string &status)

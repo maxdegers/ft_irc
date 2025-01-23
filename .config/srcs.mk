@@ -25,7 +25,7 @@ SRC_LOG			=	Log.cpp
 MAIN			=	$(addprefix $(DIR_MAIN), $(SRC_MAIN))
 SERV			=	$(addprefix $(DIR_SERV), $(SRC_SERV))
 CLIENT			=	$(addprefix $(DIR_CLIENT), $(SRC_CLIENT))
-LOG			=	$(addprefix $(DIR_LOG), $(SRC_LOG))
+LOG				=	$(addprefix $(DIR_LOG), $(SRC_LOG))
 
 # Directories **************************************************************** #
 SRC_D			=	srcs/

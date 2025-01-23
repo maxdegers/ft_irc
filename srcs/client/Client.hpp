@@ -22,21 +22,25 @@ public:
 	int			fd() const;
 	std::string	ip() const;
 	std::string	status() const;
+	std::string	incompleteMessage() const;
 
 /* Setters */
 	void		setFD(int fd);
 	void		setIP(const std::string &ip);
 	void		setStatus(const std::string &ip);
+	void		setIP(std::string ip);
+	void		setIncompleteMessage(std::string msg);
 
 /* Methods */
 
 	void		sendError(const int fd, const std::string &error);
-	
+
 private:
 	int			_fd;
 	std::string	_ip;
 	std::string	_status;
-	
+
+	std::string	_incompleteMessage;
 };
 
 #endif //CLIENT_HPP
