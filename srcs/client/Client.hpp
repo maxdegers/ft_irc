@@ -6,41 +6,54 @@
 # include <iostream>
 # include <cstring>
 # include <arpa/inet.h>
+# include "Define.hpp"
+
+#include "Server.hpp"
+
+class Server;
+
+typedef enum status {
+	NOT_REGISTERED 		= 0,
+	ONGOING_REGISTERING = 1,
+	REGISTERED			= 2
+}	t_status;
 
 class Client
 {
 public:
 /* Constructors */
-	Client();
-	Client(const Client &src);
+	Client(int fd, const std::string &ip, Server *serv);
 	~Client();
-
-/* Operators */
-	Client &operator=(const Client &src);
 
 /* Getters */
 	int			fd() const;
 	std::string	ip() const;
-	std::string	status() const;
+t_status status() const;
 	std::string	incompleteMessage() const;
 
 /* Setters */
-	void		setFD(int fd);
-	void		setIP(const std::string &ip);
-	void		setStatus(const std::string &ip);
-	void		setIP(std::string ip);
+	void		setStatus(const t_status &status);
 	void		setIncompleteMessage(std::string msg);
 
 /* Methods */
 
-	void		sendError(const int fd, const std::string &error);
+	void	PASS(std::string cmd, std::string str);
+	// void	NICK(std::string cmd, std::string str);
+	// void	USER(std::string cmd, std::string str);
+
+	void	sendError(const int fd, const std::string &error);
 
 private:
-	int			_fd;
-	std::string	_ip;
-	std::string	_status;
-
-	std::string	_incompleteMessage;
+	Server			*_server;
+	int				_fd;
+	t_status		_status;
+	std::string		_password;
+	std::string		_ip;
+	std::string		_nickname;
+	std::string		_username;
+	std::string		_realname;
+	std::string		_hostname;
+	std::string		_incompleteMessage;
 };
 
 #endif //CLIENT_HPP
