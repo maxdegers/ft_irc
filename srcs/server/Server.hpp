@@ -35,6 +35,7 @@ public:
 	void			executeCommand(const std::string &completeCommand, Client *client);
 
 	Client			*findClient(int fd);
+	bool			checkNick(const std::string &nick);
 
 	static void		signalHandler(int sig);
 

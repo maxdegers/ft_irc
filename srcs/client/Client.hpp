@@ -23,8 +23,9 @@ public:
 /* Getters */
 	int			fd() const;
 	std::string	ip() const;
-t_status status() const;
+	t_status	status() const;
 	std::string	incompleteMessage() const;
+	std::string	nickname() const;
 
 /* Setters */
 	void		setStatus(const t_status &status);
