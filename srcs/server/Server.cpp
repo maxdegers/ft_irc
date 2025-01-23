@@ -206,6 +206,7 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 			case "PASS":
 				client->PASS(args);
 			default:
+				return ;
 				//TODO renvoyer une erreur (err 808)
 		}
 	}

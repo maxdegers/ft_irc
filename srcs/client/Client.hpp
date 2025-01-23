@@ -34,7 +34,7 @@ public:
 /* Methods */
 
 	void	PASS(const std::string &str);
-	void	NICK(const std::string &str);
+	// void	NICK(const std::string &str);
 	// void	USER(std::string cmd, std::string str);
 
 	void	sendError(const int fd, const std::string &error);

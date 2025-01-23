@@ -67,41 +67,41 @@ void	Client::PASS(const std::string &str)
 	this->_status = ONGOING_REGISTERING;
 }
 
-void	Client::NICK(const std::string &str)
-{
-	if (status() == NOT_REGISTERED)
-		return (sendError(_fd, ERR_PWNOTCHECK));
-	if (str.empty())
-		return (sendError(_fd, ERR_NONICKNAMEGIVEN));
+// void	Client::NICK(const std::string &str)
+// {
+// 	if (status() == NOT_REGISTERED)
+// 		return (sendError(_fd, ERR_PWNOTCHECK));
+// 	if (str.empty())
+// 		return (sendError(_fd, ERR_NONICKNAMEGIVEN));
 	
-	std::string charset = "=#&:";
+// 	std::string charset = "=#&:";
 
 
-	for (int i = 0; str[i]; ++i) {
-		if (std::string::npos != charset.find(str[i]) || iswspace(str[i]) || (i == 0 && isdigit(str[i]))) //TODO to endestend
-			return (sendError(_fd, ERR_ERRONEUSNICKNAME(str)));
-	}
-	// if ("bot" == str)
-	// 	return (sendError(_fd, ERR_NICKNAMEINUSE(str))); //TODO ADD IF BONUS
+// 	for (int i = 0; str[i]; ++i) {
+// 		if (std::string::npos != charset.find(str[i]) || iswspace(str[i]) || (i == 0 && isdigit(str[i]))) //TODO to endestend
+// 			return (sendError(_fd, ERR_ERRONEUSNICKNAME(str)));
+// 	}
+// 	// if ("bot" == str)
+// 	// 	return (sendError(_fd, ERR_NICKNAMEINUSE(str))); //TODO ADD IF BONUS
 	
 	
-	if (_server.checkNick(str)) //TODO checkNick
-		return (sendError(_fd, ERR_NICKNAMEINUSE(str)));
+// 	if (_server->checkNick(str))
+// 		return (sendError(_fd, ERR_NICKNAMEINUSE(str)));
 	
-	if (!_nickname.empty()) {
-		sendMessage(RPL_PRENICK(_prefix, str)); //TODO SandMessage to server
-		sendMessage(RPL_NICK(_nickname, str)); //TODO SandMessage to server
-		_nickname = str;
-		_prefix = _nickname + "!" + _username + "@" + _hostname; //TODO to endestend prefix
-		return ;
-	}
+// 	if (!_nickname.empty()) {
+// 		sendMessage(RPL_PRENICK(_prefix, str)); //TODO SandMessage to server
+// 		sendMessage(RPL_NICK(_nickname, str)); //TODO SandMessage to server
+// 		_nickname = str;
+// 		_prefix = _nickname + "!" + _username + "@" + _hostname; //TODO to endestend prefix
+// 		return ;
+// 	}
 
-	_nickname = str;
+// 	_nickname = str;
 	
-	if (!_username.empty()) {
-		_prefix = _nickname + "!" + _username + "@" + _hostname;
-		_status = REGISTERED;
-		return (sendError(_fd, RPL_WELCOME(_nickname, _nickname)));
-	}
-}
+// 	if (!_username.empty()) {
+// 		_prefix = _nickname + "!" + _username + "@" + _hostname;
+// 		_status = REGISTERED;
+// 		return (sendError(_fd, RPL_WELCOME(_nickname, _nickname)));
+// 	}
+// }
 
