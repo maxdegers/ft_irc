@@ -197,7 +197,7 @@ void Server::readData(int fd)
 
 void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args)
 {
-	std::cout << command << std::endl << completeCommand << std::endl;
+	// std::cout << command << std::endl << completeCommand << std::endl;
 
 	
 	std::string::size_type firstSpace = completeCommand.find(' ');
@@ -225,18 +225,15 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 		else
 			client->sendError(client->fd(), ERR_PWNOTCHECK);
 	}
-	// else if (client->status() == ONGOING_REGISTERING)
-	// {
-	// 	switch (command)
-	// 	{
-	// 		case "USER":
-	// 			client->USER(args);
-	// 		case "NICK":
-	// 			client->NICK(args);
-	// 		default:
-	// 			//TODO renvoyer une erreur (ou pas)
-	// 	}
-	// }
+	else if (client->status() == ONGOING_REGISTERING)
+	{
+		if (command == "USER")
+			client->USER(args);
+		if (command == "NICK")
+			client->NICK(args);
+		else
+			return ; //TODO voir si il faut renvoyer un truc
+	}
 	// else // client->status == REGISTERED
 	// {
 	// 	switch (command)

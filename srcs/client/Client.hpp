@@ -43,8 +43,8 @@ public:
 
 
 	void	PASS(const std::string &str);
-	// void	NICK(const std::string &str);
-	// void	USER(const std::string &str);
+	void	NICK(const std::string &str);
+	void	USER(const std::string &str);
 
 	void	sendError(const int fd, const std::string &error);
 

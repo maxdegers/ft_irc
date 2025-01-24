@@ -81,7 +81,7 @@ void Client::sendMessage(std::string message, Channel *receive)
 
 void	Client::PASS(const std::string &str)
 {
-	std::cout <<"'" + str + "'" << std::endl;
+	// std::cout <<"'" + str + "'" << std::endl;
 	std::string error;
 
 	if (this->_status > NOT_REGISTERED)
@@ -102,81 +102,85 @@ void	Client::PASS(const std::string &str)
 	this->_status = ONGOING_REGISTERING;
 }
 
-// void Client::NICK(const std::string &str) {
-//     if (status() == NOT_REGISTERED) {
-//         return sendError(_fd, ERR_PWNOTCHECK);
-//     }
+void Client::NICK(const std::string &str) {
+	if (status() == NOT_REGISTERED) {
+		return sendError(_fd, ERR_PWNOTCHECK);
+	}
 
-//     if (str.empty()) {
-//         return sendError(_fd, ERR_NONICKNAMEGIVEN);
-//     }
+	if (str.empty()) {
+		return sendError(_fd, ERR_NONICKNAMEGIVEN);
+	}
 
-//     std::string invalidChars = "=#&:";
-//     for (size_t i = 0; i < str.size(); ++i) {
-//         if (invalidChars.find(str[i]) != std::string::npos || iswspace(str[i]) || (i == 0 && isdigit(str[i]))) {
-//             return sendError(_fd, ERR_ERRONEUSNICKNAME(str));
-//         }
-//     }
+	std::string invalidChars = "=#&:";
+	for (size_t i = 0; i < str.size(); ++i) {
+		if (invalidChars.find(str[i]) != std::string::npos || iswspace(str[i]) || (i == 0 && isdigit(str[i]))) {
+			return sendError(_fd, ERR_ERRONEUSNICKNAME(str));
+		}
+	}
 
-//     // Vérification : Nom réservé ("bot")
-//     // if (str == "bot") {
-//     //     return sendError(_fd, ERR_NICKNAMEINUSE(str)); // Nom spécial interdit
-//     // }
+	// Vérification : Nom réservé ("bot")
+	// if (str == "bot") {
+	//     return sendError(_fd, ERR_NICKNAMEINUSE(str)); // Nom spécial interdit
+	// }
 
-//     if (_server->checkNick(str)) {
-//         return sendError(_fd, ERR_NICKNAMEINUSE(str));
-//     }
+	if (_server->checkNick(str)) {
+		return sendError(_fd, ERR_NICKNAMEINUSE(str));
+	}
 
-//     // Si le client a déjà un nickname, informer les autres
-//     if (!_nickname.empty()) {
-//         sendMessage(RPL_PRENICK(_prefix, str)); // Message de pré-changement
-//         sendMessage(RPL_NICK(_nickname, str)); // Notification du changement
-//     }
+	// Si le client a déjà un nickname, informer les autres
+	if (!_nickname.empty())
+	{
+		for (std::vector<Channel *>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+		{
+			sendMessage(RPL_PRENICK(_prefix, str), *it); // Message de pré-changement
+			sendMessage(RPL_NICK(_nickname, str), *it); // Notification du changement
+		}
+	}
 
-//     _nickname = str;
+	_nickname = str;
 
-//     _prefix = _nickname + "!" + _username + "@" + _hostname;
+	_prefix = _nickname + "!" + _username + "@" + _hostname;
 
-//     if (!_username.empty()) {
-//         _status = REGISTERED;
-//         sendError(_fd, RPL_WELCOME(_nickname, _nickname));
-//     }
-// }
+	if (!_username.empty()) {
+		_status = REGISTERED;
+		sendError(_fd, RPL_WELCOME(_nickname, _nickname));
+	}
+}
 
 
-// void Client::USER(const std::string &str) {
-//     if (this->status() != NOT_REGISTERED) {
-//         return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
-//     }
+void Client::USER(const std::string &str) {
+	if (this->status() != NOT_REGISTERED) {
+		return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
+	}
 
-//     if (str.empty() || str.find(' ') == std::string::npos) {
-//         return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-//     }
+	if (str.empty() || str.find(' ') == std::string::npos) {
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+	}
 
-//     std::istringstream iss(str);
-//     std::string username, mode, unused, realname;
+	std::istringstream iss(str);
+	std::string username, mode, unused, realname;
 
-//     if (!(iss >> username >> mode >> unused)) {
-//         return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-//     }
+	if (!(iss >> username >> mode >> unused)) {
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+	}
 
-//     std::getline(iss, realname);
-//     if (realname.empty()) {
-//         return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-//     }
+	std::getline(iss, realname);
+	if (realname.empty()) {
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+	}
 
-//     realname = realname.substr(1);
+	realname = realname.substr(1);
 
-//     if (username.empty() || mode != "0" || unused != "*") {
-//         return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-//     }
+	if (username.empty() || mode != "0" || unused != "*") {
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+	}
 
-//     this->_username = username;
-//     this->_realname = realname;
+	this->_username = username;
+	this->_realname = realname;
 
-//     if (!this->_nickname.empty()) {
-//         this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
-//         this->_status = REGISTERED;
-//         sendError(_fd, RPL_WELCOME(this->_nickname, this->_nickname));
-//     }
-// }
+	if (!this->_nickname.empty()) {
+		this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
+		this->_status = REGISTERED;
+		sendError(_fd, RPL_WELCOME(this->_nickname, this->_nickname));
+	}
+}
