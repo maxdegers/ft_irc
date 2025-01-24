@@ -22,10 +22,10 @@ class Channel
 		void	shareMessage(std::string message, std::string username);
 		void	removeOp(Client *remover, Client *clientToRemove);
 
-		void	setMaxUser(unsigned long newMax);
-		void	setPassword(std::string newPassword);
-		void	setTopic(Client *clientWhoSetTopic, std::string newTopic);
-		void	setInviteOnly(bool newInvite);
+		void	setMaxUser(Client *client, unsigned long newMax);
+		void	setPassword(Client *client, std::string newPassword);
+		void	setTopic(Client *client, std::string newTopic);
+		void	setInviteOnly(Client *client, bool newInvite);
 
 		bool	checkUserOP(Client *clientToCheck);
 		bool	checkUser(Client *clientToCheck);

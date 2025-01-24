@@ -25,14 +25,20 @@ void	Channel::shareMessage(std::string message, std::string username)
 	}
 }
 
-void	Channel::setMaxUser(unsigned long newMax)
+void	Channel::setMaxUser(Client *client, unsigned long newMax)
 {
-	_maxUsers = newMax;
+	if (checkUserOP(client))
+		_maxUsers = newMax;
+	else
+		throw NotOperatorException();
 }
 
-void	Channel::setPassword(std::string newPassword)
+void	Channel::setPassword(Client *client, std::string newPassword)
 {
-	_password = newPassword;
+	if (checkUserOP(client))
+		_password = newPassword;
+	else
+		throw NotOperatorException();
 }
 
 void	Channel::setTopic(Client *clientWhoSetTopic, std::string newTopic)
@@ -47,9 +53,12 @@ void	Channel::setTopic(Client *clientWhoSetTopic, std::string newTopic)
 		throw NotOperatorException();
 }
 
-void	Channel::setInviteOnly(bool newInvite)
+void	Channel::setInviteOnly(Client *client, bool newInvite)
 {
-	_inviteOnly = newInvite;
+	if (checkUserOP(client))
+		_inviteOnly = newInvite;
+	else
+		throw NotOperatorException();
 }
 
 bool	Channel::checkUserOP(Client *clientToCheck)

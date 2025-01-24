@@ -34,6 +34,7 @@ ${OBJ_D}:
 	@mkdir -p ${OBJ_D}/client
 	@mkdir -p ${OBJ_D}/server
 	@mkdir -p ${OBJ_D}/logs
+	@mkdir -p ${OBJ_D}/channels
 
 clean	:
 	@echo "Cleaning $(WHITE)[$(RED)$(NAME)$(WHITE)]...$(DEFAULT)"
