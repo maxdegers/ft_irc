@@ -188,8 +188,20 @@ void Server::readData(int fd)
 		client->setIncompleteMessage(string);
 		return ;
 	}
-	std::cout << "FULL MSG: " << string;
-	// TODO complete command = string
+	executeCommand(string, client);
+}
+
+void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args)
+{
+	std::string::size_type firstSpace = completeCommand.find(' ');
+	if (firstSpace == std::string::npos || firstSpace == completeCommand.size() - 1)
+	{
+		command = completeCommand;
+		return ;
+	}
+	command = completeCommand.substr(0, firstSpace);
+	args = completeCommand.substr(firstSpace + 1, completeCommand.size());
+	std::cout << command << std::endl << args << std::endl;
 }
 
 void Server::executeCommand(const std::string &completeCommand, Client *client)
@@ -197,18 +209,13 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 	std::string	command;
 	std::string	args;
 
-	command = completeCommand.substr(0, completeCommand.find(' '));
-	args = completeCommand.substr(completeCommand.find(' '), std::string::npos);
+	separateCmdArg(completeCommand, command, args);
 	if (client->status() == NOT_REGISTERED)
 	{
-		switch (command)
-		{
-			case "PASS":
-				client->PASS(args);
-			default:
-				return ;
-				//TODO renvoyer une erreur (err 808)
-		}
+		if (command == "PASS")
+			client->PASS(args);
+		else
+			return ; //TODO renvoyer une erreur (err 808)
 	}
 	// else if (client->status() == ONGOING_REGISTERING)
 	// {

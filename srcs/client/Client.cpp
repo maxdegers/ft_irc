@@ -24,6 +24,11 @@ t_status Client::status() const
 	return (_status);
 }
 
+std::string Client::nickname() const
+{
+	return (_nickname);
+}
+
 std::string Client::incompleteMessage() const
 {
 	return (_incompleteMessage);
