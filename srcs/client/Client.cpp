@@ -55,19 +55,23 @@ void Client::sendError(const int fd, const std::string &error)
 
 void	Client::PASS(const std::string &str)
 {
+	std::cout <<"'" + str + "'" << std::endl;
 	std::string error;
 
 	if (this->_status > NOT_REGISTERED)
 		error = ERR_ALREADYREGISTRED(this->_nickname);
 
-	if (str.empty() || error.empty())
+	if (str.empty() && error.empty())
 		error = ERR_NEEDMOREPARAMS("PASS");
 
-	if (str.compare(this->_server->getPassword()) || error.empty())
+	if (str.compare(this->_server->getPassword()) && error.empty())
 		error = ERR_PASSWDMISMATCH;
 
 	if (!error.empty())
+	{
 		this->sendError(_fd, error);
+		return ;
+	}
 
 	this->_status = ONGOING_REGISTERING;
 }

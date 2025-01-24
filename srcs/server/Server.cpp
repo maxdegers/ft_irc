@@ -193,15 +193,19 @@ void Server::readData(int fd)
 
 void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args)
 {
+	std::cout << command << std::endl << completeCommand << std::endl;
+
+	
 	std::string::size_type firstSpace = completeCommand.find(' ');
-	if (firstSpace == std::string::npos || firstSpace == completeCommand.size() - 1)
+	std::string::size_type size = completeCommand.size();
+	if (firstSpace == std::string::npos || firstSpace == size - 1)
 	{
 		command = completeCommand;
 		return ;
 	}
 	command = completeCommand.substr(0, firstSpace);
-	args = completeCommand.substr(firstSpace + 1, completeCommand.size());
-	std::cout << command << std::endl << args << std::endl;
+	args = completeCommand.substr(firstSpace + 1, size);
+	args = args.substr(0, args.size() - 1);
 }
 
 void Server::executeCommand(const std::string &completeCommand, Client *client)
