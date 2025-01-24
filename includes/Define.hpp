@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG_MODE false		//Change to true to chow debug messages
+#define DEBUG_MODE true		//Change to true to chow debug messages
 
 #define ERR_UNKNOWNCOMMAND(client, command) (":irc_server 421 " + (client) + " " + (command) + " :Unknown command\n")
 

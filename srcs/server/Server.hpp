@@ -56,6 +56,7 @@ private:
 	static bool					_signal;
 	std::vector<Client>			_clients;
 	std::vector<struct pollfd>	_fds;
+
 };
 
 #endif //SERVER_HPP

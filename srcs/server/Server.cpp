@@ -3,14 +3,14 @@
 #include "Define.hpp"
 
 #include <iostream>
-#include <vector> //-> for vector
-#include <sys/socket.h> //-> for socket()
-#include <sys/types.h> //-> for socket()
-#include <netinet/in.h> //-> for sockaddr_in
-#include <unistd.h> //-> for close()
-#include <arpa/inet.h> //-> for inet_ntoa()
-#include <poll.h> //-> for poll()
-#include <csignal> //-> for signal()
+#include <vector>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <poll.h>
+#include <csignal>
 #include <cstring>
 #include <sstream>
 
