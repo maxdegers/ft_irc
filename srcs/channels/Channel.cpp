@@ -9,7 +9,7 @@
 #include <algorithm>
 
 
-Channel::Channel(Client *creator, std::string channelName)
+Channel::Channel(Client *creator, const std::string& channelName)
 {
 	_opUsers.push_back(creator);
 	_user.push_back(creator);
@@ -28,7 +28,7 @@ void	Channel::removeOp(Client *remover, Client *clientToRemove)
 	}
 }
 
-void	Channel::shareMessage(std::string message, std::string username)
+void	Channel::shareMessage(const std::string& message, const std::string& username)
 {
 	for (std::vector<Client *>::iterator i = _user.begin(); i != _user.end(); i++)
 	{
@@ -55,7 +55,7 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 	return ; //ERR_BADCHANNELKEY (475);
 }
 
-void	Channel::setMaxUser(unsigned long newMax)
+void	Channel::setMaxUser(Client *client, unsigned long newMax)
 {
 	if (checkUserOP(client))
 		_maxUsers = newMax;
@@ -63,7 +63,7 @@ void	Channel::setMaxUser(unsigned long newMax)
 		throw NotOperatorException();
 }
 
-void	Channel::setPassword(Client *client, std::string newPassword)
+void	Channel::setPassword(Client *client, const std::string& newPassword)
 {
 	if (checkUserOP(client))
 		_password = newPassword;
