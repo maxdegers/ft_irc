@@ -24,7 +24,6 @@ public:
 
 /* Operators */
 	bool operator==(const Client &compare);
-	Client &operator=(const Client &src);
 
 /* Getters */
 	int			fd() const;

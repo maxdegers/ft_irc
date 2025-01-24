@@ -3,6 +3,7 @@
 //
 
 #include "Channel.hpp"
+#include "Client.hpp"
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -10,7 +11,7 @@ void	Channel::removeOp(Client *remover, Client *clientToRemove)
 {
 	for (std::vector<Client *>::iterator i = _opUsers.begin(); i != _opUsers.end(); i++)
 	{
-		if (*i == clientToRemove && checkUserOP(clientToRemove))
+		if (*i == clientToRemove && checkUserOP(remover))
 			_opUsers.erase(i);
 	}
 }
@@ -19,8 +20,8 @@ void	Channel::shareMessage(std::string message, std::string username)
 {
 	for (std::vector<Client *>::iterator i = _user.begin(); i != _user.end(); i++)
 	{
-		if (*i.getUsername() != username)
-			send(i.fd(), message.c_str(), message.size(), 0);
+		if ((*i)->getUsername() != username)
+			send((*i)->fd(), message.c_str(), message.size(), 0);
 	}
 }
 
