@@ -119,39 +119,39 @@ void	Client::PASS(const std::string &str)
 // }
 
 
-void Client::USER(const std::string &str) {
-    if (this->status() != NOT_REGISTERED) {
-        return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
-    }
+// void Client::USER(const std::string &str) {
+//     if (this->status() != NOT_REGISTERED) {
+//         return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
+//     }
 
-    if (str.empty() || str.find(' ') == std::string::npos) {
-        return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-    }
+//     if (str.empty() || str.find(' ') == std::string::npos) {
+//         return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+//     }
 
-    std::istringstream iss(str);
-    std::string username, mode, unused, realname;
+//     std::istringstream iss(str);
+//     std::string username, mode, unused, realname;
 
-    if (!(iss >> username >> mode >> unused)) {
-        return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-    }
+//     if (!(iss >> username >> mode >> unused)) {
+//         return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+//     }
 
-    std::getline(iss, realname);
-    if (realname.empty()) {
-        return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-    }
+//     std::getline(iss, realname);
+//     if (realname.empty()) {
+//         return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+//     }
 
-    realname = realname.substr(1);
+//     realname = realname.substr(1);
 
-    if (username.empty() || mode != "0" || unused != "*") {
-        return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-    }
+//     if (username.empty() || mode != "0" || unused != "*") {
+//         return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+//     }
 
-    this->_username = username;
-    this->_realname = realname;
+//     this->_username = username;
+//     this->_realname = realname;
 
-    if (!this->_nickname.empty()) {
-        this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
-        this->_status = REGISTERED;
-        sendError(_fd, RPL_WELCOME(this->_nickname, this->_nickname));
-    }
-}
+//     if (!this->_nickname.empty()) {
+//         this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
+//         this->_status = REGISTERED;
+//         sendError(_fd, RPL_WELCOME(this->_nickname, this->_nickname));
+//     }
+// }
