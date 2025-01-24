@@ -4,6 +4,7 @@
 #include <sstream>
 #include "Define.hpp"
 #include "../channels/Channel.hpp"
+#include "Log.hpp"
 #include <sys/socket.h>
 
 /* Constructors ************************************************************* */
@@ -100,6 +101,7 @@ void	Client::PASS(const std::string &str)
 	}
 
 	this->_status = ONGOING_REGISTERING;
+	Log::debug("Client Status = ONGOING_REGISTERING");
 }
 
 void Client::NICK(const std::string &str) {
@@ -127,7 +129,6 @@ void Client::NICK(const std::string &str) {
 		return sendError(_fd, ERR_NICKNAMEINUSE(str));
 	}
 
-	// Si le client a déjà un nickname, informer les autres
 	if (!_nickname.empty())
 	{
 		for (std::vector<Channel *>::iterator it = _channels.begin(); it != _channels.end(); ++it)
@@ -144,12 +145,16 @@ void Client::NICK(const std::string &str) {
 	if (!_username.empty()) {
 		_status = REGISTERED;
 		sendError(_fd, RPL_WELCOME(_nickname, _nickname));
+		Log::debug(_nickname +" Status = REGISTERED");
+		return ;
 	}
+
+	Log::debug(_nickname +" Status = ONGOING_REGISTERING");
 }
 
 
 void Client::USER(const std::string &str) {
-	if (this->status() != NOT_REGISTERED) {
+	if (this->status() == REGISTERED) {
 		return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
 	}
 
@@ -182,5 +187,10 @@ void Client::USER(const std::string &str) {
 		this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
 		this->_status = REGISTERED;
 		sendError(_fd, RPL_WELCOME(this->_nickname, this->_nickname));
+		Log::debug(_nickname +" Status = REGISTERED");
+		return ;
+
 	}
+
+	Log::debug(_nickname +" Status = ONGOING_REGISTERING");
 }
