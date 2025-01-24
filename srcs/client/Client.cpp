@@ -13,7 +13,7 @@ Client::~Client() {}
 /* Operators **************************************************************** */
 bool Client::operator==(const Client &compare)
 {
-	if (this->_nickname == compare._nickname
+	if (this->_nickname == compare._nickname && this->_username == compare._username
 		&& this->_ip == compare._ip && this->_fd == compare._fd)
 		return true;
 	return false;

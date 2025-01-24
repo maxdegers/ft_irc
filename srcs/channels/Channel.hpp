@@ -13,18 +13,24 @@ class Client;
 class Channel
 {
 	public:
-		Channel();
+		Channel(Client *creator, std::string channelName);
 		Channel(const Channel &old);
 		~Channel();
 		Channel &operator=(const Channel &old);
 
-		void	tryToJoin(Client *newClient, std::string password);
 		void	shareMessage(std::string message, std::string username);
+
+		void	inviteUser(Client *host, Client *guest);
+
 		void	removeOp(Client *remover, Client *clientToRemove);
+		void	kickUser(Client *kicker, Client *toKick);
+
+		void	tryToJoin(Client *newClient, const std::string& password);
+		void	addOp(Client *adder, Client *clientToAdd);
 
 		void	setMaxUser(unsigned long newMax);
-		void	setPassword(std::string newPassword);
-		void	setTopic(Client *clientWhoSetTopic, std::string newTopic);
+		void	setPassword(const std::string& newPassword);
+		void	setTopic(Client *clientWhoSetTopic, const std::string& newTopic);
 		void	setInviteOnly(bool newInvite);
 
 		bool	checkUserOP(Client *clientToCheck);
