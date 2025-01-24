@@ -7,7 +7,6 @@
 #include <sys/socket.h> //-> for socket()
 #include <sys/types.h> //-> for socket()
 #include <netinet/in.h> //-> for sockaddr_in
-#include <fcntl.h> //-> for fcntl()
 #include <unistd.h> //-> for close()
 #include <arpa/inet.h> //-> for inet_ntoa()
 #include <poll.h> //-> for poll()
@@ -225,7 +224,6 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 			client->PASS(args);
 		else
 			client->sendError(client->fd(), ERR_PWNOTCHECK);
-			return ; //TODO renvoyer une erreur (err 808)
 	}
 	// else if (client->status() == ONGOING_REGISTERING)
 	// {

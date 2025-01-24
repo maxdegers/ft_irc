@@ -2,11 +2,22 @@
 #include <cstring>
 #include <arpa/inet.h>
 #include "Define.hpp"
+#include "../channels/Channel.hpp"
+#include <sys/socket.h>
 
 /* Constructors ************************************************************* */
 Client::Client(int fd, const std::string &ip, Server *serv) : _server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip) {}
 
 Client::~Client() {}
+
+/* Operators **************************************************************** */
+bool Client::operator==(const Client &compare)
+{
+	if (this->_nickname == compare._nickname
+		&& this->_ip == compare._ip && this->_fd == compare._fd)
+		return true;
+	return false;
+}
 
 /* Getters ****************************************************************** */
 int Client::fd() const
@@ -27,6 +38,11 @@ t_status Client::status() const
 std::string Client::nickname() const
 {
 	return (_nickname);
+}
+
+std::string	&Client::getUsername()
+{
+	return _username;
 }
 
 std::string Client::incompleteMessage() const
@@ -52,6 +68,15 @@ void Client::sendError(const int fd, const std::string &error)
 	send(fd, err, strlen(err), 0);
 }
 
+void Client::sendMessage(std::string message, Client *receive)
+{
+	send(receive->_fd, message.c_str(), message.size(), 0);
+}
+
+void Client::sendMessage(std::string message, Channel *receive)
+{
+	receive->shareMessage(message, _username);
+}
 
 void	Client::PASS(const std::string &str)
 {
@@ -82,7 +107,7 @@ void	Client::PASS(const std::string &str)
 // 		return (sendError(_fd, ERR_PWNOTCHECK));
 // 	if (str.empty())
 // 		return (sendError(_fd, ERR_NONICKNAMEGIVEN));
-	
+
 // 	std::string charset = "=#&:";
 
 
@@ -92,11 +117,11 @@ void	Client::PASS(const std::string &str)
 // 	}
 // 	// if ("bot" == str)
 // 	// 	return (sendError(_fd, ERR_NICKNAMEINUSE(str))); //TODO ADD IF BONUS
-	
-	
+
+
 // 	if (_server->checkNick(str))
 // 		return (sendError(_fd, ERR_NICKNAMEINUSE(str)));
-	
+
 // 	if (!_nickname.empty()) {
 // 		sendMessage(RPL_PRENICK(_prefix, str)); //TODO SandMessage to server
 // 		sendMessage(RPL_NICK(_nickname, str)); //TODO SandMessage to server
@@ -106,7 +131,7 @@ void	Client::PASS(const std::string &str)
 // 	}
 
 // 	_nickname = str;
-	
+
 // 	if (!_username.empty()) {
 // 		_prefix = _nickname + "!" + _username + "@" + _hostname;
 // 		_status = REGISTERED;
