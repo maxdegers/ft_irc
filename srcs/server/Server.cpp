@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include "Log.hpp"
+#include "Define.hpp"
 
 #include <iostream>
 #include <vector> //-> for vector
@@ -98,14 +99,18 @@ void	Server::init()
 	_socketFD = socket(AF_INET, SOCK_STREAM, 0);
 	if (_socketFD < 0)
 		throw (std::runtime_error("failed to create socket"));
+	Log::debug("Server socket created");
 
 	int en = 1;
 	if (setsockopt(_socketFD, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
 		throw (std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
+	Log::debug("Server options setup");
 	if (bind(_socketFD, (struct sockaddr *)&addr, sizeof(addr)) == -1)
 		throw(std::runtime_error("failed to bind socket"));
+	Log::debug("Server socket bound on port");
 	if (listen(_socketFD, SOMAXCONN) == -1)
 		throw(std::runtime_error("failed to listen on server socket"));
+	Log::debug("Server listening");
 
 	newPoll.fd = _socketFD;
 	newPoll.events = POLLIN;
@@ -156,7 +161,7 @@ void Server::acceptClient()
 	_clients.push_back(client);
 	_fds.push_back(newPoll);
 
-	Log::info("Client accepted");
+	Log::debug("Client accepted to socket");
 }
 
 void Server::readData(int fd)
@@ -180,7 +185,7 @@ void Server::readData(int fd)
 		return ;
 	}
 	buff[bytes] = '\0';
-	Log::info("Data received from client");
+	Log::debug("Data received from client");
 
 	string += buff;
 	if (string.find('\n') == std::string::npos)
@@ -219,6 +224,7 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 		if (command == "PASS")
 			client->PASS(args);
 		else
+			client->sendError(client->fd(), ERR_PWNOTCHECK);
 			return ; //TODO renvoyer une erreur (err 808)
 	}
 	// else if (client->status() == ONGOING_REGISTERING)

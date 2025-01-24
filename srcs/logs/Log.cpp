@@ -2,10 +2,13 @@
 #include "colors.h"
 #include <iostream>
 #include <ctime>
+#include <Define.hpp>
 
 /* Methods ****************************************************************** */
 void Log::log(logLevel lvl, const std::string &message)
 {
+	if (lvl == DEBUG && DEBUG_MODE == false)
+		return ;
 	std::cout
 		<< B_WHITE << "["
 		<< levelToString(lvl)
