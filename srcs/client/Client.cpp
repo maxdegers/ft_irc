@@ -1,6 +1,7 @@
 #include "Client.hpp"
 #include <cstring>
 #include <arpa/inet.h>
+#include <sstream>
 #include "Define.hpp"
 
 /* Constructors ************************************************************* */
@@ -76,41 +77,81 @@ void	Client::PASS(const std::string &str)
 	this->_status = ONGOING_REGISTERING;
 }
 
-// void	Client::NICK(const std::string &str)
-// {
-// 	if (status() == NOT_REGISTERED)
-// 		return (sendError(_fd, ERR_PWNOTCHECK));
-// 	if (str.empty())
-// 		return (sendError(_fd, ERR_NONICKNAMEGIVEN));
-	
-// 	std::string charset = "=#&:";
+// void Client::NICK(const std::string &str) {
+//     if (status() == NOT_REGISTERED) {
+//         return sendError(_fd, ERR_PWNOTCHECK);
+//     }
 
+//     if (str.empty()) {
+//         return sendError(_fd, ERR_NONICKNAMEGIVEN);
+//     }
 
-// 	for (int i = 0; str[i]; ++i) {
-// 		if (std::string::npos != charset.find(str[i]) || iswspace(str[i]) || (i == 0 && isdigit(str[i]))) //TODO to endestend
-// 			return (sendError(_fd, ERR_ERRONEUSNICKNAME(str)));
-// 	}
-// 	// if ("bot" == str)
-// 	// 	return (sendError(_fd, ERR_NICKNAMEINUSE(str))); //TODO ADD IF BONUS
-	
-	
-// 	if (_server->checkNick(str))
-// 		return (sendError(_fd, ERR_NICKNAMEINUSE(str)));
-	
-// 	if (!_nickname.empty()) {
-// 		sendMessage(RPL_PRENICK(_prefix, str)); //TODO SandMessage to server
-// 		sendMessage(RPL_NICK(_nickname, str)); //TODO SandMessage to server
-// 		_nickname = str;
-// 		_prefix = _nickname + "!" + _username + "@" + _hostname; //TODO to endestend prefix
-// 		return ;
-// 	}
+//     std::string invalidChars = "=#&:";
+//     for (size_t i = 0; i < str.size(); ++i) {
+//         if (invalidChars.find(str[i]) != std::string::npos || iswspace(str[i]) || (i == 0 && isdigit(str[i]))) {
+//             return sendError(_fd, ERR_ERRONEUSNICKNAME(str));
+//         }
+//     }
 
-// 	_nickname = str;
-	
-// 	if (!_username.empty()) {
-// 		_prefix = _nickname + "!" + _username + "@" + _hostname;
-// 		_status = REGISTERED;
-// 		return (sendError(_fd, RPL_WELCOME(_nickname, _nickname)));
-// 	}
+//     // Vérification : Nom réservé ("bot")
+//     // if (str == "bot") {
+//     //     return sendError(_fd, ERR_NICKNAMEINUSE(str)); // Nom spécial interdit
+//     // }
+
+//     if (_server->checkNick(str)) {
+//         return sendError(_fd, ERR_NICKNAMEINUSE(str));
+//     }
+
+//     // Si le client a déjà un nickname, informer les autres
+//     if (!_nickname.empty()) {
+//         sendMessage(RPL_PRENICK(_prefix, str)); // Message de pré-changement
+//         sendMessage(RPL_NICK(_nickname, str)); // Notification du changement
+//     }
+
+//     _nickname = str;
+
+//     _prefix = _nickname + "!" + _username + "@" + _hostname;
+
+//     if (!_username.empty()) {
+//         _status = REGISTERED;
+//         sendError(_fd, RPL_WELCOME(_nickname, _nickname));
+//     }
 // }
 
+
+void Client::USER(const std::string &str) {
+    if (this->status() != NOT_REGISTERED) {
+        return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
+    }
+
+    if (str.empty() || str.find(' ') == std::string::npos) {
+        return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+    }
+
+    std::istringstream iss(str);
+    std::string username, mode, unused, realname;
+
+    if (!(iss >> username >> mode >> unused)) {
+        return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+    }
+
+    std::getline(iss, realname);
+    if (realname.empty()) {
+        return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+    }
+
+    realname = realname.substr(1);
+
+    if (username.empty() || mode != "0" || unused != "*") {
+        return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+    }
+
+    this->_username = username;
+    this->_realname = realname;
+
+    if (!this->_nickname.empty()) {
+        this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
+        this->_status = REGISTERED;
+        sendError(_fd, RPL_WELCOME(this->_nickname, this->_nickname));
+    }
+}
