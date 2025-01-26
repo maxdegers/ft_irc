@@ -144,8 +144,8 @@ void Client::NICK(const std::string &str) {
 
 	if (!_username.empty()) {
 		_status = REGISTERED;
-		sendError(_fd, RPL_WELCOME(_nickname, _nickname));
-		Log::debug(_nickname +" Status = REGISTERED");
+		sendMessage(RPL_WELCOME(_nickname, _nickname), this);
+		Log::info(_nickname + " Status = REGISTERED");
 		return ;
 	}
 
@@ -186,11 +186,11 @@ void Client::USER(const std::string &str) {
 	if (!this->_nickname.empty()) {
 		this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
 		this->_status = REGISTERED;
-		sendError(_fd, RPL_WELCOME(this->_nickname, this->_nickname));
-		Log::debug(_nickname +" Status = REGISTERED");
+		sendMessage(RPL_WELCOME(this->_nickname, this->_nickname), this);
+		Log::info(_nickname +" Status = REGISTERED");
 		return ;
 
 	}
 
-	Log::debug(_nickname +" Status = ONGOING_REGISTERING");
+	Log::debug(_username +" Status = ONGOING_REGISTERING");
 }
