@@ -144,8 +144,8 @@ void Client::NICK(const std::string &str) {
 
 	if (!_username.empty()) {
 		_status = REGISTERED;
-		sendMessage(RPL_WELCOME(_nickname, _nickname), this);
-		Log::info(_nickname + " Status = REGISTERED");
+		sendError(_fd, RPL_WELCOME(_nickname, _nickname));
+		Log::debug(_nickname +" Status = REGISTERED");
 		return ;
 	}
 
@@ -155,34 +155,28 @@ void Client::NICK(const std::string &str) {
 
 void Client::USER(const std::string &str) {
 	if (this->status() == REGISTERED) {
-		sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
-		return;
+		return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
 	}
 
 	if (str.empty() || str.find(' ') == std::string::npos) {
-		sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-		return;
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
 	}
 
 	std::istringstream iss(str);
 	std::string username, mode, unused, realname;
 
 	if (!(iss >> username >> mode >> unused)) {
-		sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-		return;
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
 	}
 
 	std::getline(iss, realname);
-	if (realname.empty() || realname[0] != ':') {
-		sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-		return;
+	if (realname.empty() || realname[1] != ':') {
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
 	}
 
-	realname = realname.substr(1);
-
+	realname = realname.substr(2);
 	if (username.empty() || mode != "0" || unused != "*") {
-		sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
-		return;
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
 	}
 
 	this->_username = username;
