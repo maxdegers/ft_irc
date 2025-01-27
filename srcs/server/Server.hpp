@@ -40,7 +40,7 @@ public:
 	static void		signalHandler(int sig);
 
 	void			closeFDs();
-	void			destroy(int fd);
+	void			QUIT(int fd);
 
 /* Exceptions */
 	class ArgumentsErrorException : public std::exception

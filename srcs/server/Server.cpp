@@ -165,35 +165,51 @@ void Server::acceptClient()
 
 void Server::readData(int fd)
 {
-	Client	*client = findClient(fd);
-	char	buff[1024];
+	Client		*client = findClient(fd);
+	char		buff[1024];
 	std::string string;
+
 	memset(buff, 0, sizeof(buff));
 
+	// Retrieve incomplete message from the client
 	if (!client->incompleteMessage().empty())
 	{
 		string = client->incompleteMessage();
 		client->setIncompleteMessage("");
 	}
+
+	// Receive data from the client
 	ssize_t	bytes = recv(fd, buff, sizeof(buff) - 1, 0);
 	if (bytes <= 0)
 	{
-		Log::info("Client disconnected");
-		destroy(fd);
-		close(fd);
-		return ;
+		QUIT(fd);
+		return;
 	}
 	buff[bytes] = '\0';
 	Log::debug("Data received from client");
 
+	// Append new data to the string
 	string += buff;
-	if (string.find('\n') == std::string::npos)
+
+	// Process the string line by line
+	std::istringstream	stream(string);
+	std::string			line;
+	bool				hasIncompleteLine = true;
+
+	while (std::getline(stream, line))
 	{
-		client->setIncompleteMessage(string);
-		return ;
+		if (stream.eof() && string.at(string.size() - 1) != '\n')
+		{
+			client->setIncompleteMessage(line);
+			hasIncompleteLine = false;
+		}
+		else
+			executeCommand(line, client);
 	}
-	executeCommand(string, client);
+	if (hasIncompleteLine && string.at(string.size() - 1) != '\n')
+		client->setIncompleteMessage(line);
 }
+
 
 void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args)
 {
@@ -219,6 +235,8 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 	{
 		if (command == "PASS")
 			client->PASS(args);
+		if (command == "QUIT")
+			QUIT(client->fd());
 		else
 			client->sendError(client->fd(), ERR_PWNOTCHECK);
 	}
@@ -228,25 +246,16 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 			client->USER(args);
 		if (command == "NICK")
 			client->NICK(args);
+		if (command == "QUIT")
+			QUIT(client->fd());
 		else
 			return ; //TODO voir si il faut renvoyer un truc
 	}
-	// else // client->status == REGISTERED
-	// {
-	// 	switch (command)
-	// 	{
-	// 		case "KICK":
-	// 			channel->KICK(args);
-	// 		case "TOPIC":
-	// 			channel->TOPIC(args);
-	// 		case "MODE":
-	// 			channel->MODE(args);
-	// 		case "JOIN":
-	// 			channel->JOIN(args);
-	// 		default:
-	// 			//TODO renvoyer une erreur (ou pas)
-	// 	}
-	// }
+	else // client->status == REGISTERED
+	{
+		if (command == "QUIT")
+			QUIT(client->fd());
+	}
 }
 
 Client *Server::findClient(int fd)
@@ -286,24 +295,23 @@ void Server::closeFDs()
 		close(i);
 }
 
-void Server::destroy(int fd)
+void Server::QUIT(int fd)
 {
-	for (size_t i = 0; i < _fds.size(); i++)
+	for (std::vector<Client>::iterator it = _clients.begin(); it->fd() != fd; ++it)
 	{
-		if (_fds[i].fd == fd)
+		if (it->fd() == fd)
 		{
-			_fds.erase(_fds.begin() + i);
-			break;
+			//TODO broadcast the fact that the client disconnected to other clients
+			_clients.erase(it);
 		}
 	}
-	for (size_t i = 0; i < _clients.size(); i++)
+	for (std::vector<struct pollfd>::iterator it = _fds.begin(); it->fd != fd; ++it)
 	{
-		if (_clients[i].fd() == fd)
-		{
-			_clients.erase(_clients.begin() + i);
-			break;
-		}
+		if (it->fd == fd)
+			_fds.erase(it);
 	}
+	close(fd);
+	Log::info("Client disconnected");
 }
 
 /* Exceptions *************************************************************** */
