@@ -13,12 +13,11 @@ class Client;
 class Channel
 {
 	public:
-		Channel(Client *creator, const std::string& channelName);
+		Channel(Client *creator, const std::string& channelName, const std::string& serverIP);
 		Channel(const Channel &old);
 		~Channel();
 		Channel &operator=(const Channel &old);
 
-		void	tryToJoin(Client *newClient, std::string password);
 		void	shareMessage(const std::string& message, const std::string& username);
 
 		void	inviteUser(Client *host, Client *guest);
@@ -37,17 +36,6 @@ class Channel
 		bool	checkUserOP(Client *clientToCheck);
 		bool	checkUser(Client *clientToCheck);
 
-		class NotOperatorException : public std::exception
-		{
-			public:
-				virtual const char *what() const throw();
-		};
-
-		class NotInChannelException : public std::exception
-		{
-		public:
-			virtual const char *what() const throw();
-		};
 
 	private:
 		std::vector<Client *>		_user;
@@ -59,4 +47,5 @@ class Channel
 		std::string					_topic;
 		std::vector<std::string>	_invitedUsername;
 		std::string					_channelName;
+		std::string 				_serverIP;
 };
