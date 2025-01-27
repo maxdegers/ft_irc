@@ -233,6 +233,8 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 	separateCmdArg(completeCommand, command, args);
 	if (client->status() == NOT_REGISTERED)
 	{
+		if (command == "CAP")
+			client->sendError(client->fd(), ERR_UNKNOWNCOMMAND(std::string(""), command));
 		if (command == "PASS")
 			client->PASS(args);
 		if (command == "QUIT")
