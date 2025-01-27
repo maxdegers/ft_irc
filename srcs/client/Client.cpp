@@ -10,7 +10,10 @@
 /* Constructors ************************************************************* */
 Client::Client(int fd, const std::string &ip, Server *serv) : _server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip) {}
 
-Client::~Client() {}
+Client::~Client()
+{
+	Log::debug("Client object deleted");
+}
 
 /* Operators **************************************************************** */
 bool Client::operator==(const Client &compare)
