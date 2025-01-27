@@ -155,29 +155,34 @@ void Client::NICK(const std::string &str) {
 
 void Client::USER(const std::string &str) {
 	if (this->status() == REGISTERED) {
-		return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
+		sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
+		return;
 	}
 
 	if (str.empty() || str.find(' ') == std::string::npos) {
-		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+		sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+		return;
 	}
 
 	std::istringstream iss(str);
 	std::string username, mode, unused, realname;
 
 	if (!(iss >> username >> mode >> unused)) {
-		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+		sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+		return;
 	}
 
 	std::getline(iss, realname);
-	if (realname.empty()) {
-		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+	if (realname.empty() || realname[0] != ':') {
+		sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+		return;
 	}
 
 	realname = realname.substr(1);
 
 	if (username.empty() || mode != "0" || unused != "*") {
-		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+		sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+		return;
 	}
 
 	this->_username = username;
@@ -186,11 +191,11 @@ void Client::USER(const std::string &str) {
 	if (!this->_nickname.empty()) {
 		this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
 		this->_status = REGISTERED;
+
 		sendError(_fd, RPL_WELCOME(this->_nickname, this->_nickname));
-		Log::debug(_nickname +" Status = REGISTERED");
-		return ;
-
+		Log::debug(_nickname + " has completed registration (Status = REGISTERED)");
+	} else {
+		Log::debug(_nickname + " is ongoing registration (Status = ONGOING_REGISTERING)");
 	}
-
-	Log::debug(_nickname +" Status = ONGOING_REGISTERING");
 }
+
