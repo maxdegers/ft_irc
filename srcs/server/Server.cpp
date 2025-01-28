@@ -78,6 +78,7 @@ void	Server::executeCommand(const std::string &completeCommand, Client *client)
 			case CMD_INVITE:
 				break;
 			case CMD_TOPIC:
+				// TOPIC(args, client);
 				break;
 			case CMD_MODE:
 				break;

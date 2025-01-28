@@ -42,6 +42,7 @@ public:
 
 	void			closeFDs();
 	void			QUIT(int fd);
+	// void			TOPIC(const std::string &str, Client *client);
 
 /* Exceptions */
 	class ArgumentsErrorException : public std::exception
