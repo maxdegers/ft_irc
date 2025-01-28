@@ -36,6 +36,8 @@ class Channel
 		bool	checkUserOP(Client *clientToCheck);
 		bool	checkUser(Client *clientToCheck);
 
+		void	displayTopic(Client *client);
+
 
 	private:
 		std::vector<Client *>		_user;

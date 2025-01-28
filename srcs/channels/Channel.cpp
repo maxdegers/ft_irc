@@ -4,7 +4,6 @@
 
 #include "Channel.hpp"
 #include "Client.hpp"
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <algorithm>
 #include "Define.hpp"
@@ -98,9 +97,14 @@ void	Channel::setTopic(Client *clientWhoSetTopic, const std::string& newTopic)
 	std::string error;
 
 	if (_topicOpOnly && checkUserOP(clientWhoSetTopic))
+	{
 		_topic = newTopic;
+	}
 	else if (!_topicOpOnly && checkUser(clientWhoSetTopic))
+	{
 		_topic = newTopic;
+
+	}
 	else if (!checkUser(clientWhoSetTopic))
 	{
 		error.assign(ERR_NOTONCHANNEL(_channelName));
@@ -203,7 +207,7 @@ void Channel::kickUser(Client *kicker, Client *toKick)
 		{
 			if (*i == toKick)
 				_user.erase(i);
-			//shareMessage(kicker.getPrefix() + " " + "KICK #" + _channelName + " " + toKick->getUsername() + "\r\n", "");
+			shareMessage(RPL_KICKED(kicker->getUsername(), _channelName, toKick->getUsername()), "");
 		}
 	}
 	else
@@ -215,8 +219,20 @@ void Channel::kickUser(Client *kicker, Client *toKick)
 
 void Channel::inviteUser(Client *host, Client *guest)
 {
+	std::string awnser;
+
 	if (checkUser(host))
 	{
 		_invitedUsername.push_back(guest->getUsername());
+		awnser.assign(RPL_INVITING(guest->getUsername(), guest->nickname(), _channelName));
+		send(guest->fd(), awnser.c_str(), awnser.size(), 0);
 	}
+}
+
+void Channel::displayTopic(Client *client)
+{
+	if (_topic.empty())
+		RPL_NOTOPIC(client->getUsername(), _channelName);
+	else
+		RPL_TOPIC(client->getUsername(), _channelName, _topic);
 }
