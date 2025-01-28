@@ -220,3 +220,8 @@ void Channel::inviteUser(Client *host, Client *guest)
 		_invitedUsername.push_back(guest->getUsername());
 	}
 }
+
+std::string &Channel::getChannelName()
+{
+	return _channelName;
+}
