@@ -56,33 +56,51 @@ void	Server::executeCommand(const std::string &completeCommand, Client *client)
 	std::string	args;
 
 	separateCmdArg(completeCommand, command, args);
-	if (client->status() == NOT_REGISTERED)
-	{
-		if (command == "CAP")
-			client->sendError(client->fd(), ERR_UNKNOWNCOMMAND(std::string(""), command));
-		else if (command == "PASS")
-			client->PASS(args);
-		else if (command == "QUIT")
-			QUIT(client->fd());
-		else
-			client->sendError(client->fd(), ERR_PWNOTCHECK);
-	}
-	else if (client->status() == ONGOING_REGISTERING)
-	{
-		if (command == "USER")
-			client->USER(args);
-		else if (command == "NICK")
-			client->NICK(args);
-		else if (command == "QUIT")
-			QUIT(client->fd());
-		else
-			return ; //TODO voir si il faut renvoyer un truc
-	}
-	else // client->status == REGISTERED
-	{
-		if (command == "QUIT")
-			QUIT(client->fd());
-	}
+
+	std::map<std::string, ecmd>::iterator it = _commandMap.find(command);
+    if (it != _commandMap.end()) {
+        ecmd cmd = it->second;
+		switch (cmd)
+		{
+			case CMD_PASS:
+				client->PASS(args);
+				break;
+			case CMD_NICK:
+				client->NICK(args);
+				break;
+			case CMD_USER:
+				client->USER(args);
+				break;
+			if (client->status() == REGISTERED)
+			{
+			case CMD_KICK:
+				break;
+			case CMD_INVITE:
+				break;
+			case CMD_TOPIC:
+				break;
+			case CMD_MODE:
+				break;
+			case CMD_JOIN:
+				break;
+			case CMD_QUIT:
+				break;
+			case CMD_PRIVMSG:
+				break;
+			default:
+				break;
+			}
+		}
+    } else {
+		static std::string commands[] = {"CAP", "AUTHENTICATE", "PING", "PONG", "OPER", "ERROR", "NAMES", "MODT", \
+		"VERSION", "ADMIN", "CONNECT", "LUSERS", "TIME", "STATS", "HELP", "INFO", "NOTICE"};
+		for (int i = 0; i < 17; ++i) {
+			if (!command.compare(0, commands[i].size(), commands[i]))
+				return client->sendMessage(ERR_UNKNOWNCOMMAND(client->getPrefix(), commands[i]), client), (void)0;
+		}
+    }
+
+
 }
 
 void	Server::QUIT(int fd)

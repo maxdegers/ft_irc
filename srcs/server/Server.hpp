@@ -2,6 +2,7 @@
 # define SERVER_HPP
 
 # include "Client.hpp"
+# include <map>
 # include <vector>
 
 struct pollfd;
@@ -56,6 +57,22 @@ private:
 	static bool					_signal;
 	std::vector<Client>			_clients;
 	std::vector<struct pollfd>	_fds;
+
+	typedef enum Command {
+    	CMD_KICK,
+   	 	CMD_INVITE,
+    	CMD_TOPIC,
+    	CMD_MODE,
+    	CMD_JOIN,
+    	CMD_QUIT,
+    	CMD_PRIVMSG,
+    	CMD_PASS,
+    	CMD_NICK,
+    	CMD_USER,
+    	CMD_UNKNOWN // Pour les commandes non reconnues
+	} 			ecmd;
+	std::map<std::string, ecmd> _commandMap;
+
 
 	void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args);
 	void truncCarriageReturns(std::string &str);
