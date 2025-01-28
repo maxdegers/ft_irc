@@ -60,6 +60,8 @@ private:
 	void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args);
 	void truncCarriageReturns(std::string &str);
 
+	void JOIN(std::string args);
+
 };
 
 #endif //SERVER_HPP

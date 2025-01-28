@@ -1,25 +1,16 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    srcs.mk                                            :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: mbrousse <mbrousse@student.42lyon.fr>      +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/10/21 15:46:19 by mpitot            #+#    #+#              #
-#    Updated: 2024/10/30 16:20:14 by mbrousse         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 # Sources ******************************************************************** #
 
-SRCS			=	$(MAIN)			\
-					$(SERV)			\
-					$(CLIENT)		\
-					$(LOG)			\
-					$(CHAN)			\
+SRCS			=	$(MAIN)				\
+					$(SERV)				\
+					$(CLIENT)			\
+					$(LOG)				\
+					$(CHAN)				\
 
 SRC_MAIN		=	main.cpp
-SRC_SERV		=	Server.cpp
+SRC_SERV		=	Server.cpp			\
+					ServerUtils.cpp		\
+					ServerSockets.cpp	\
+					ServerParsing.cpp
 SRC_CLIENT		=	Client.cpp
 SRC_LOG			=	Log.cpp
 SRC_CHAN		=	Channel.cpp
