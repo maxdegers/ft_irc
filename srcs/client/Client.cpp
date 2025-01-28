@@ -122,11 +122,6 @@ void Client::NICK(const std::string &str) {
 		}
 	}
 
-	// Vérification : Nom réservé ("bot")
-	// if (str == "bot") {
-	//     return sendError(_fd, ERR_NICKNAMEINUSE(str)); // Nom spécial interdit
-	// }
-
 	if (_server->checkNick(str)) {
 		return sendError(_fd, ERR_NICKNAMEINUSE(str));
 	}
