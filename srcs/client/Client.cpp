@@ -8,7 +8,9 @@
 #include <sys/socket.h>
 
 /* Constructors ************************************************************* */
-Client::Client(int fd, const std::string &ip, Server *serv) : _server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip) {}
+Client::Client(int fd, const std::string &ip, Server *serv) : 	_server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip)
+{
+}
 
 Client::~Client()
 {
@@ -48,6 +50,11 @@ std::string Client::nickname() const
 std::string	&Client::getUsername()
 {
 	return _username;
+}
+
+std::string &Client::getPrefix()
+{
+	return _prefix;
 }
 
 std::string Client::incompleteMessage() const
@@ -157,6 +164,10 @@ void Client::NICK(const std::string &str) {
 
 
 void Client::USER(const std::string &str) {
+	if (status() == NOT_REGISTERED) {
+		return sendError(_fd, ERR_PWNOTCHECK);
+	}
+	
 	if (this->status() == REGISTERED) {
 		return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
 	}
