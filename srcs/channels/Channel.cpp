@@ -90,3 +90,8 @@ const char *Channel::NotInChannelException::what() const throw()
 {
 	return "[Error] this user did not join this channel";
 }
+
+std::string Channel::getChannelName() const
+{
+	return _channelName;
+}

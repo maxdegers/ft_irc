@@ -18,6 +18,8 @@ class Channel
 		~Channel();
 		Channel &operator=(const Channel &old);
 
+		std::string	getChannelName() const;
+
 		void	tryToJoin(Client *newClient, std::string password);
 		void	shareMessage(std::string message, std::string username);
 		void	removeOp(Client *remover, Client *clientToRemove);

@@ -96,6 +96,16 @@ Client	*Server::findClient(int fd)
 	return (NULL);
 }
 
+Channel	*Server::findChannel(const std::string &name)
+{
+	for (size_t i = 0; i < _channels.size(); i++)
+	{
+		if (_channels[i].getChannelName() == name)
+			return (&_channels[i]);
+	}
+	return (NULL);
+}
+
 bool	Server::checkNick(const std::string& nick)
 {
 	for (size_t i = 0; i < _clients.size(); i++)
