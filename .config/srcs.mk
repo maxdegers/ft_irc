@@ -28,7 +28,8 @@ MAIN			=	$(addprefix $(DIR_MAIN), $(SRC_MAIN))
 SERV			=	$(addprefix $(DIR_SERV), $(SRC_SERV))
 CLIENT			=	$(addprefix $(DIR_CLIENT), $(SRC_CLIENT))
 LOG				=	$(addprefix $(DIR_LOG), $(SRC_LOG))
-CHAN				=	$(addprefix $(DIR_CHAN), $(SRC_CHAN))
+CHAN			=	$(addprefix $(DIR_CHAN), $(SRC_CHAN))
+
 
 # Directories **************************************************************** #
 SRC_D			=	srcs/

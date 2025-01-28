@@ -44,31 +44,59 @@ Server &Server::operator=(const Server &src)
 /* Getters ****************************************************************** */
 int Server::port() const
 {
-	return _port;
+	return (_port);
 }
 
 int Server::socketFD() const
 {
-	return _socketFD;
+	return (_socketFD);
 }
 
 std::vector<Client> Server::clients() const
 {
-	return _clients;
+	return (_clients);
 }
 
 std::vector<struct ::pollfd> Server::fds() const
 {
-	return _fds;
+	return (_fds);
 }
 
 std::string Server::getPassword()
 {
-	return _password;
+	return (_password);
+}
+
+/* Private Methods ********************************************************** */
+void	Server::separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args)
+{
+	std::string::size_type firstSpace = completeCommand.find(' ');
+	std::string::size_type size = completeCommand.size();
+	if (firstSpace == std::string::npos || firstSpace == size - 1)
+	{
+		command = completeCommand.substr(0, size - 1);
+		return ;
+	}
+	command = completeCommand.substr(0, firstSpace);
+	args = completeCommand.substr(firstSpace + 1, size);
+	args = args.substr(0, args.size() - 1);
+}
+
+void	Server::truncCarriageReturns(std::string &str)
+{
+	std::string::iterator it = str.begin();
+
+	while (it != str.end())
+	{
+		if (*it == '\r')
+			it = str.erase(it);
+		else
+			++it;
+	}
 }
 
 /* Methods ****************************************************************** */
-void Server::initArguments(int ac, char** av)
+void	Server::initArguments(int ac, char** av)
 {
 	if (ac != 3)
 		throw (ArgumentsErrorException());
@@ -140,7 +168,7 @@ void	Server::run()
 	Log::info("Server is down.");
 }
 
-void Server::acceptClient()
+void	Server::acceptClient()
 {
 	struct sockaddr_in	clientAddr;
 	struct pollfd		newPoll;
@@ -163,13 +191,7 @@ void Server::acceptClient()
 	Log::debug("Client accepted to socket");
 }
 
-// void truncCarriageReturns(std::string &str)
-// {
-// 	std::string::size_type i = str.find('\r');
-//
-// }
-
-void Server::readData(int fd)
+void	Server::readData(int fd)
 {
 	Client		*client = findClient(fd);
 	char		buff[1024];
@@ -210,28 +232,16 @@ void Server::readData(int fd)
 			hasIncompleteLine = false;
 		}
 		else
+		{
+			truncCarriageReturns(line);
 			executeCommand(line, client);
+		}
 	}
 	if (hasIncompleteLine && string.at(string.size() - 1) != '\n')
 		client->setIncompleteMessage(line);
 }
 
-
-void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args)
-{
-	std::string::size_type firstSpace = completeCommand.find(' ');
-	std::string::size_type size = completeCommand.size();
-	if (firstSpace == std::string::npos || firstSpace == size - 1)
-	{
-		command = completeCommand.substr(0, size - 1);
-		return ;
-	}
-	command = completeCommand.substr(0, firstSpace);
-	args = completeCommand.substr(firstSpace + 1, size);
-	args = args.substr(0, args.size() - 1);
-}
-
-void Server::executeCommand(const std::string &completeCommand, Client *client)
+void	Server::executeCommand(const std::string &completeCommand, Client *client)
 {
 	std::string	command;
 	std::string	args;
@@ -241,9 +251,9 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 	{
 		if (command == "CAP")
 			client->sendError(client->fd(), ERR_UNKNOWNCOMMAND(std::string(""), command));
-		if (command == "PASS")
+		else if (command == "PASS")
 			client->PASS(args);
-		if (command == "QUIT")
+		else if (command == "QUIT")
 			QUIT(client->fd());
 		else
 			client->sendError(client->fd(), ERR_PWNOTCHECK);
@@ -266,7 +276,7 @@ void Server::executeCommand(const std::string &completeCommand, Client *client)
 	}
 }
 
-Client *Server::findClient(int fd)
+Client	*Server::findClient(int fd)
 {
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
@@ -276,7 +286,7 @@ Client *Server::findClient(int fd)
 	return (NULL);
 }
 
-bool Server::checkNick(const std::string& nick)
+bool	Server::checkNick(const std::string& nick)
 {
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
@@ -288,7 +298,7 @@ bool Server::checkNick(const std::string& nick)
 	return (false);
 }
 
-void Server::signalHandler(int sig)
+void	Server::signalHandler(int sig)
 {
 	if (sig == SIGINT || sig == SIGQUIT)
 	{
@@ -297,13 +307,13 @@ void Server::signalHandler(int sig)
 	}
 }
 
-void Server::closeFDs()
+void	Server::closeFDs()
 {
 	for (int i = 3; i < 1024; i++)
 		close(i);
 }
 
-void Server::QUIT(int fd)
+void	Server::QUIT(int fd)
 {
 	for (std::vector<Client>::iterator it = _clients.begin(); it < _clients.end(); ++it)
 	{

@@ -57,6 +57,9 @@ private:
 	std::vector<Client>			_clients;
 	std::vector<struct pollfd>	_fds;
 
+	void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args);
+	void truncCarriageReturns(std::string &str);
+
 };
 
 #endif //SERVER_HPP

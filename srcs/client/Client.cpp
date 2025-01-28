@@ -85,7 +85,6 @@ void Client::sendMessage(std::string message, Channel *receive)
 
 void	Client::PASS(const std::string &str)
 {
-	// std::cout <<"'" + str + "'" << std::endl;
 	std::string error;
 
 	if (this->_status > NOT_REGISTERED)
@@ -94,7 +93,7 @@ void	Client::PASS(const std::string &str)
 	if (str.empty() && error.empty())
 		error = ERR_NEEDMOREPARAMS("PASS");
 
-	if (str.compare(this->_server->getPassword()) && error.empty())
+	if (!str.compare(this->_server->getPassword()) && error.empty())
 		error = ERR_PASSWDMISMATCH;
 
 	if (!error.empty())
