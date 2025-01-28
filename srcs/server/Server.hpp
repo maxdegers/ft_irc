@@ -2,6 +2,7 @@
 # define SERVER_HPP
 
 # include "Client.hpp"
+# include <map>
 # include <vector>
 
 struct pollfd;
@@ -40,7 +41,8 @@ public:
 	static void		signalHandler(int sig);
 
 	void			closeFDs();
-	void			destroy(int fd);
+	void			QUIT(int fd);
+	void			TOPIC(const std::string &str, Client *client);
 
 /* Exceptions */
 	class ArgumentsErrorException : public std::exception
@@ -56,6 +58,27 @@ private:
 	static bool					_signal;
 	std::vector<Client>			_clients;
 	std::vector<struct pollfd>	_fds;
+
+	typedef enum Command {
+    	CMD_KICK,
+   	 	CMD_INVITE,
+    	CMD_TOPIC,
+    	CMD_MODE,
+    	CMD_JOIN,
+    	CMD_QUIT,
+    	CMD_PRIVMSG,
+    	CMD_PASS,
+    	CMD_NICK,
+    	CMD_USER,
+    	CMD_UNKNOWN // Pour les commandes non reconnues
+	} 			ecmd;
+	std::map<std::string, ecmd> _commandMap;
+
+
+	void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args);
+	void truncCarriageReturns(std::string &str);
+
+	void JOIN(std::string args);
 
 };
 

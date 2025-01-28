@@ -38,6 +38,7 @@ class Channel
 
 		void	displayTopic(Client *client);
 
+		std::string &getChannelName();
 
 	private:
 		std::vector<Client *>		_user;

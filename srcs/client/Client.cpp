@@ -1,14 +1,21 @@
 #include "Client.hpp"
 #include <cstring>
 #include <arpa/inet.h>
+#include <sstream>
 #include "Define.hpp"
 #include "../channels/Channel.hpp"
+#include "Log.hpp"
 #include <sys/socket.h>
 
 /* Constructors ************************************************************* */
-Client::Client(int fd, const std::string &ip, Server *serv) : _server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip) {}
+Client::Client(int fd, const std::string &ip, Server *serv) : 	_server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip)
+{
+}
 
-Client::~Client() {}
+Client::~Client()
+{
+	Log::debug("Client object deleted");
+}
 
 /* Operators **************************************************************** */
 bool Client::operator==(const Client &compare)
@@ -43,6 +50,11 @@ std::string Client::nickname() const
 std::string	&Client::getUsername()
 {
 	return _username;
+}
+
+std::string &Client::getPrefix()
+{
+	return _prefix;
 }
 
 std::string Client::incompleteMessage() const
@@ -80,7 +92,6 @@ void Client::sendMessage(std::string message, Channel *receive)
 
 void	Client::PASS(const std::string &str)
 {
-	std::cout <<"'" + str + "'" << std::endl;
 	std::string error;
 
 	if (this->_status > NOT_REGISTERED)
@@ -89,7 +100,7 @@ void	Client::PASS(const std::string &str)
 	if (str.empty() && error.empty())
 		error = ERR_NEEDMOREPARAMS("PASS");
 
-	if (str.compare(this->_server->getPassword()) && error.empty())
+	if (!str.compare(this->_server->getPassword()) && error.empty())
 		error = ERR_PASSWDMISMATCH;
 
 	if (!error.empty())
@@ -99,43 +110,94 @@ void	Client::PASS(const std::string &str)
 	}
 
 	this->_status = ONGOING_REGISTERING;
+	Log::debug("Client Status = ONGOING_REGISTERING");
 }
 
-// void	Client::NICK(const std::string &str)
-// {
-// 	if (status() == NOT_REGISTERED)
-// 		return (sendError(_fd, ERR_PWNOTCHECK));
-// 	if (str.empty())
-// 		return (sendError(_fd, ERR_NONICKNAMEGIVEN));
+void Client::NICK(const std::string &str) {
+	if (status() == NOT_REGISTERED) {
+		return sendError(_fd, ERR_PWNOTCHECK);
+	}
 
-// 	std::string charset = "=#&:";
+	if (str.empty()) {
+		return sendError(_fd, ERR_NONICKNAMEGIVEN);
+	}
+
+	std::string invalidChars = "=#&:";
+	for (size_t i = 0; i < str.size(); ++i) {
+		if (invalidChars.find(str[i]) != std::string::npos || iswspace(str[i]) || (i == 0 && isdigit(str[i]))) {
+			return sendError(_fd, ERR_ERRONEUSNICKNAME(str));
+		}
+	}
+
+	if (_server->checkNick(str)) {
+		return sendError(_fd, ERR_NICKNAMEINUSE(str));
+	}
+
+	if (!_nickname.empty())
+	{
+		for (std::vector<Channel *>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+		{
+			sendMessage(RPL_PRENICK(_prefix, str), *it); // Message de pré-changement
+			sendMessage(RPL_NICK(_nickname, str), *it); // Notification du changement
+		}
+	}
+
+	_nickname = str;
+
+	_prefix = _nickname + "!" + _username + "@" + _hostname;
+
+	if (!_username.empty()) {
+		_status = REGISTERED;
+		sendMessage(RPL_WELCOME(_nickname, _nickname), this);
+		Log::info(_nickname + " is now registered");
+		return ;
+	}
+
+	Log::debug(_nickname +" Status = ONGOING_REGISTERING");
+}
 
 
-// 	for (int i = 0; str[i]; ++i) {
-// 		if (std::string::npos != charset.find(str[i]) || iswspace(str[i]) || (i == 0 && isdigit(str[i]))) //TODO to endestend
-// 			return (sendError(_fd, ERR_ERRONEUSNICKNAME(str)));
-// 	}
-// 	// if ("bot" == str)
-// 	// 	return (sendError(_fd, ERR_NICKNAMEINUSE(str))); //TODO ADD IF BONUS
+void Client::USER(const std::string &str) {
+	if (status() == NOT_REGISTERED) {
+		return sendError(_fd, ERR_PWNOTCHECK);
+	}
+	
+	if (this->status() == REGISTERED) {
+		return sendError(_fd, ERR_ALREADYREGISTRED(this->_username));
+	}
 
+	if (str.empty() || str.find(' ') == std::string::npos) {
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+	}
 
-// 	if (_server->checkNick(str))
-// 		return (sendError(_fd, ERR_NICKNAMEINUSE(str)));
+	std::istringstream iss(str);
+	std::string username, mode, unused, realname;
 
-// 	if (!_nickname.empty()) {
-// 		sendMessage(RPL_PRENICK(_prefix, str)); //TODO SandMessage to server
-// 		sendMessage(RPL_NICK(_nickname, str)); //TODO SandMessage to server
-// 		_nickname = str;
-// 		_prefix = _nickname + "!" + _username + "@" + _hostname; //TODO to endestend prefix
-// 		return ;
-// 	}
+	if (!(iss >> username >> mode >> unused)) {
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+	}
 
-// 	_nickname = str;
+	std::getline(iss, realname);
+	if (realname.empty() || realname[1] != ':') {
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+	}
 
-// 	if (!_username.empty()) {
-// 		_prefix = _nickname + "!" + _username + "@" + _hostname;
-// 		_status = REGISTERED;
-// 		return (sendError(_fd, RPL_WELCOME(_nickname, _nickname)));
-// 	}
-// }
+	realname = realname.substr(2);
+	if (username.empty() || mode != "0" || unused != "*") {
+		return sendError(_fd, ERR_NEEDMOREPARAMS("USER"));
+	}
 
+	this->_username = username;
+	this->_realname = realname;
+
+	if (!this->_nickname.empty()) {
+		this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
+		this->_status = REGISTERED;
+		sendMessage(RPL_WELCOME(this->_nickname, this->_nickname), this);
+		Log::info(_nickname + " is now registered");
+		return ;
+
+	}
+
+	Log::debug(_username +" Status = ONGOING_REGISTERING");
+}

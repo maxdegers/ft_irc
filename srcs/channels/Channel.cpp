@@ -236,3 +236,8 @@ void Channel::displayTopic(Client *client)
 	else
 		RPL_TOPIC(client->getUsername(), _channelName, _topic);
 }
+
+std::string &Channel::getChannelName()
+{
+	return _channelName;
+}

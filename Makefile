@@ -35,6 +35,7 @@ ${OBJ_D}:
 	@mkdir -p ${OBJ_D}/server
 	@mkdir -p ${OBJ_D}/logs
 	@mkdir -p ${OBJ_D}/channels
+	@mkdir -p ${OBJ_D}/utils
 
 clean	:
 	@echo "Cleaning $(WHITE)[$(RED)$(NAME)$(WHITE)]...$(DEFAULT)"

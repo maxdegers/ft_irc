@@ -29,6 +29,8 @@ public:
 	int			fd() const;
 	std::string	ip() const;
 	std::string	&getUsername();
+	std::string &getPrefix();
+	
 	t_status	status() const;
 	std::string	incompleteMessage() const;
 	std::string	nickname() const;
@@ -43,8 +45,8 @@ public:
 
 
 	void	PASS(const std::string &str);
-	// void	NICK(const std::string &str);
-	// void	USER(std::string cmd, std::string str);
+	void	NICK(const std::string &str);
+	void	USER(const std::string &str);
 
 	void	sendError(const int fd, const std::string &error);
 
@@ -58,7 +60,7 @@ private:
 	std::string					_username;
 	std::string					_prefix;
 	std::string					_realname;
-	std::string					_hostname;
+	std::string					_hostname; //TODO Setup Hostname
 	std::string					_incompleteMessage;
 };
 
