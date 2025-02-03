@@ -33,7 +33,7 @@ void	Channel::shareMessage(const std::string& message, const std::string& userna
 {
 	for (std::vector<Client *>::iterator i = _user.begin(); i != _user.end(); i++)
 	{
-		if (username.empty() || (*i)->getUsername() != username)
+		if ((*i)->getUsername() != username)
 			send((*i)->fd(), message.c_str(), message.size(), 0);
 	}
 }
@@ -222,6 +222,10 @@ void Channel::inviteUser(Client *host, Client *guest)
 }
 
 std::string &Channel::getChannelName()
+{
+	return _channelName;
+}
+std::string Channel::getChannelName() const
 {
 	return _channelName;
 }

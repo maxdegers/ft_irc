@@ -2,6 +2,7 @@
 # define SERVER_HPP
 
 # include "Client.hpp"
+# include "Channel.hpp"
 # include <map>
 # include <vector>
 
@@ -36,14 +37,13 @@ public:
 	void			executeCommand(const std::string &completeCommand, Client *client);
 
 	Client			*findClient(int fd);
+	Channel			*findChannel(const std::string &name);
 	bool			checkNick(const std::string &nick);
 
 	static void		signalHandler(int sig);
 
 	void			closeFDs();
 	void			QUIT(int fd);
-	// void			TOPIC(const std::string &str, Client *client);
-	void			PRIVMSG(const std::string &str, Client *client);
 
 /* Exceptions */
 	class ArgumentsErrorException : public std::exception
@@ -59,6 +59,7 @@ private:
 	static bool					_signal;
 	std::vector<Client>			_clients;
 	std::vector<struct pollfd>	_fds;
+	std::vector<Channel>		_channels;
 
 	typedef enum Command {
     	CMD_KICK,
@@ -78,8 +79,11 @@ private:
 
 	void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args);
 	void truncCarriageReturns(std::string &str);
+	std::vector<std::string> split(const std::string &str, char delimiter);
 
-	void JOIN(std::string args);
+	void JOIN(std::string args, Client *client);
+	// void			TOPIC(const std::string &str, Client *client);
+	// void			PRIVMSG(const std::string &str, Client *client);
 
 };
 
