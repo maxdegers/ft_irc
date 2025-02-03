@@ -55,16 +55,33 @@ void PRIVMSG(const std::string &str, Client *client)
     if (message[0] != ':' || message.size() < 2)
         return client->sendError(client->fd(), ERR_NOTEXTTOSEND(client->nickname()));
 
-
-
-    if ((destination.size() > 3) && (destination[0] == '%' && destination[1] == '#') )
+    if ((destination.size() > 2) && (destination[0] == '%' && destination[1] == '#') )
     {
         channel = channel.substr(2);
-        //TODO finich
+        if (channel.empty())
+            return client->sendError(client->fd(), ERR_NORECIPIENT(client->nickname(), "PRIVMSG"));
+        //check if channel exist
+
+        //call sendToChannel
+
+
+        
     } else if ((destination.size() > 3) && (destination[0] == '@' && destination[1] == '%' && destination[2] == '#'))
     {
         channel = channel.substr(3);
-        //TODO finich
-    }
+        if (channel.empty())
+            return client->sendError(client->fd(), ERR_NORECIPIENT(client->nickname(), "PRIVMSG"));
+        //check if channel exist
+        //call sendToChannel
 
+    }
+    else
+    {
+        if ()//check if user exist)
+        {
+            //call sendToUser
+        }
+        else
+            client->sendError(client->fd(), ERR_NOSUCHNICK(client->nickname(), destination));   
+    }
 }
