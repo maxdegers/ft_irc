@@ -87,7 +87,7 @@ void	Server::executeCommand(const std::string &completeCommand, Client *client)
 			case CMD_QUIT:
 				break;
 			case CMD_PRIVMSG:
-				PRIVMSG(args, client);
+				// PRIVMSG(args, client);
 				break;
 			default:
 				break;
