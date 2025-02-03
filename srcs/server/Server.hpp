@@ -44,6 +44,8 @@ public:
 
 	void			closeFDs();
 	void			QUIT(int fd);
+	// void			TOPIC(const std::string &str, Client *client);
+	void			PRIVMSG(const std::string &str, Client *client);
 
 /* Exceptions */
 	class ArgumentsErrorException : public std::exception
@@ -81,7 +83,7 @@ private:
 	void truncCarriageReturns(std::string &str);
 	std::vector<std::string> split(const std::string &str, char delimiter);
 
-	void JOIN(std::string args);
+	void JOIN(std::string args, Client *client);
 
 
 };

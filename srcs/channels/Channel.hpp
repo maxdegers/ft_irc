@@ -13,36 +13,34 @@ class Client;
 class Channel
 {
 	public:
-		Channel();
+		Channel(Client *creator, const std::string& channelName, const std::string& serverIP);
 		Channel(const Channel &old);
 		~Channel();
 		Channel &operator=(const Channel &old);
+
+		void	shareMessage(const std::string& message, const std::string& username);
+
+		void	inviteUser(Client *host, Client *guest);
 
 		std::string	getChannelName() const;
 
 		void	tryToJoin(Client *newClient, std::string password);
 		void	shareMessage(std::string message, std::string username);
 		void	removeOp(Client *remover, Client *clientToRemove);
+		void	kickUser(Client *kicker, Client *toKick);
+
+		void	tryToJoin(Client *newClient, const std::string& password);
+		void	addOp(Client *adder, Client *clientToAdd);
 
 		void	setMaxUser(Client *client, unsigned long newMax);
-		void	setPassword(Client *client, std::string newPassword);
-		void	setTopic(Client *client, std::string newTopic);
+		void	setPassword(Client *client, const std::string& newPassword);
+		void	setTopic(Client *client, const std::string& newTopic);
 		void	setInviteOnly(Client *client, bool newInvite);
 
 		bool	checkUserOP(Client *clientToCheck);
 		bool	checkUser(Client *clientToCheck);
 
-		class NotOperatorException : public std::exception
-		{
-			public:
-				virtual const char *what() const throw();
-		};
-
-		class NotInChannelException : public std::exception
-		{
-		public:
-			virtual const char *what() const throw();
-		};
+		std::string &getChannelName();
 
 	private:
 		std::vector<Client *>		_user;
@@ -54,4 +52,5 @@ class Channel
 		std::string					_topic;
 		std::vector<std::string>	_invitedUsername;
 		std::string					_channelName;
+		std::string 				_serverIP;
 };
