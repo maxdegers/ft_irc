@@ -2,18 +2,6 @@
 
 #include <sstream>
 
-std::vector<std::string> split(const std::string& str, char delimiter) {
-	std::vector<std::string> result;
-	std::string token;
-	std::istringstream tokenStream(str);
-
-	while (std::getline(tokenStream, token, delimiter)) {
-		result.push_back(token);
-	}
-
-	return result;
-}
-
 void Server::JOIN(std::string args, Client *client)
 {
 	std::string::size_type spaceIndex = args.find(' ');
@@ -46,3 +34,4 @@ void Server::JOIN(std::string args, Client *client)
 		++channel;
 	}
 }
+

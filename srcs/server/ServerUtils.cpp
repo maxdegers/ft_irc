@@ -1,6 +1,7 @@
 #include "Server.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <csignal>
 #include <poll.h>
 
@@ -57,7 +58,7 @@ std::string Server::getPassword()
 	return (_password);
 }
 
-/* Utils ******************************************************************** */
+/* Parsing utils ************************************************************ */
 void	Server::separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args)
 {
 	std::string::size_type firstSpace = completeCommand.find(' ');
@@ -83,6 +84,18 @@ void	Server::truncCarriageReturns(std::string &str)
 		else
 			++it;
 	}
+}
+
+std::vector<std::string> Server::split(const std::string& str, char delimiter) {
+	std::vector<std::string> result;
+	std::string token;
+	std::istringstream tokenStream(str);
+
+	while (std::getline(tokenStream, token, delimiter)) {
+		result.push_back(token);
+	}
+
+	return result;
 }
 
 /* Utils ******************************************************************** */

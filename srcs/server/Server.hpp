@@ -79,8 +79,10 @@ private:
 
 	void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args);
 	void truncCarriageReturns(std::string &str);
+	std::vector<std::string> split(const std::string &str, char delimiter);
 
 	void JOIN(std::string args);
+
 
 };
 
