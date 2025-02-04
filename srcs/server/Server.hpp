@@ -43,6 +43,9 @@ public:
 	void			closeFDs();
 	void			QUIT(int fd);
 	void			TOPIC(const std::string &str, Client *client);
+	void			INVITE(const std::string &cmd, Client *client);
+	void			MODE(const std::string &cmd, Client *client);
+
 
 /* Exceptions */
 	class ArgumentsErrorException : public std::exception

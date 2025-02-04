@@ -97,14 +97,9 @@ void	Channel::setTopic(Client *clientWhoSetTopic, const std::string& newTopic)
 	std::string error;
 
 	if (_topicOpOnly && checkUserOP(clientWhoSetTopic))
-	{
 		_topic = newTopic;
-	}
 	else if (!_topicOpOnly && checkUser(clientWhoSetTopic))
-	{
 		_topic = newTopic;
-
-	}
 	else if (!checkUser(clientWhoSetTopic))
 	{
 		error.assign(ERR_NOTONCHANNEL(_channelName));
@@ -220,13 +215,22 @@ void Channel::kickUser(Client *kicker, Client *toKick)
 void Channel::inviteUser(Client *host, Client *guest)
 {
 	std::string awnser;
+	bool		inList = false;
 
-	if (checkUser(host))
+	for (std::vector<std::string >::iterator it = _invitedUsername.begin(); it != _invitedUsername.end(); it++)
 	{
-		_invitedUsername.push_back(guest->getUsername());
-		awnser.assign(RPL_INVITING(guest->getUsername(), guest->nickname(), _channelName));
-		send(guest->fd(), awnser.c_str(), awnser.size(), 0);
+		if ((*it) == guest->getUsername())
+			inList = true;
 	}
+	if (inList)
+	{
+		awnser.assign(ERR_USERONCHANNEL(host->nickname(), guest->nickname(), _channelName));
+		send(guest->fd(), awnser.c_str(), awnser.size(), 0);
+		return;
+	}
+	_invitedUsername.push_back(guest->getUsername());
+	awnser.assign(RPL_INVITING(guest->getUsername(), guest->nickname(), _channelName));
+	send(guest->fd(), awnser.c_str(), awnser.size(), 0);
 }
 
 void Channel::displayTopic(Client *client)
