@@ -12,7 +12,7 @@
 void	Server::init()
 {
 	struct sockaddr_in addr;
-	socklen_t	addrLen = sizeof(addr);
+	// socklen_t	addrLen = sizeof(addr);
 	struct pollfd newPoll;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(_port);
@@ -24,9 +24,9 @@ void	Server::init()
 	Log::debug("Server socket created");
 
 	int en = 1;
-	if (getsockname(_socketFD, (struct sockaddr *) &addr, &addrLen) == -1)
-		throw (std::runtime_error("failed to retrieve hostname"));
-	Log::debug("Retrieved hostname");
+	// if (getsockname(_socketFD, (struct sockaddr *) &addr, &addrLen) == -1)
+	// 	throw (std::runtime_error("failed to retrieve hostname"));
+	// Log::debug("Retrieved hostname");
 
 	if (setsockopt(_socketFD, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
 		throw (std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
@@ -40,7 +40,8 @@ void	Server::init()
 		throw(std::runtime_error("failed to listen on server socket"));
 	Log::debug("Server listening");
 
-	_hostname = inet_ntoa(addr.sin_addr);
+	// _hostname = inet_ntoa(addr.sin_addr);
+	_hostname = "";
 	newPoll.fd = _socketFD;
 	newPoll.events = POLLIN;
 	newPoll.revents = 0;

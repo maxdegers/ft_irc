@@ -94,13 +94,15 @@ void	Client::PASS(const std::string &str)
 {
 	std::string error;
 
+	Log::debug("Args = '" + str + "'");
+	Log::debug("Server Password = '" + this->_server->getPassword() + "'");
 	if (this->_status > NOT_REGISTERED)
 		error = ERR_ALREADYREGISTRED(this->_nickname);
 
 	if (str.empty() && error.empty())
 		error = ERR_NEEDMOREPARAMS("PASS");
 
-	if (!str.compare(this->_server->getPassword()) && error.empty())
+	if (str != this->_server->getPassword() && error.empty())
 		error = ERR_PASSWDMISMATCH;
 
 	if (!error.empty())

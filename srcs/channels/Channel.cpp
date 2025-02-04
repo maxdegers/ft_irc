@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <algorithm>
 #include "Define.hpp"
+#include "Log.hpp"
 
 Channel::Channel(Client *creator, const std::string& channelName, const std::string& serverIP)
 {
@@ -17,6 +18,8 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	_topicOpOnly = true;
 	_maxUsers = 0;
 	_serverIP = serverIP;
+	shareMessage(":" + creator->getUsername() + " JOIN " + _channelName + "\r\n", "");
+	Log::debug("User " + creator->getUsername() + " joined channel " + _channelName);
 }
 
 void	Channel::removeOp(Client *remover, Client *clientToRemove)
@@ -71,6 +74,7 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 		_user.push_back(newClient);
 		if (std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()) != _invitedUsername.end())
 			_invitedUsername.erase(std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()));
+		Log::debug("User " + newClient->getUsername() + " joined channel " + _channelName);
 		shareMessage(":" + newClient->getUsername() + " JOIN " + _channelName + "\r\n", "");
 	}
 	error.assign(ERR_BADCHANNELKEY(newClient->getUsername(), _channelName));
@@ -110,9 +114,15 @@ void	Channel::setTopic(Client *clientWhoSetTopic, const std::string& newTopic)
 	std::string error;
 
 	if (_topicOpOnly && checkUserOP(clientWhoSetTopic))
+	{
 		_topic = newTopic;
+		displayTopic(clientWhoSetTopic);
+	}
 	else if (!_topicOpOnly && checkUser(clientWhoSetTopic))
+	{
 		_topic = newTopic;
+		displayTopic(clientWhoSetTopic);
+	}
 	else if (!checkUser(clientWhoSetTopic))
 	{
 		error.assign(ERR_NOTONCHANNEL(_channelName));

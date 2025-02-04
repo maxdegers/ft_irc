@@ -57,9 +57,9 @@ void	Server::executeCommand(const std::string &completeCommand, Client *client)
 
 	separateCmdArg(completeCommand, command, args);
 
-	std::map<std::string, ecmd>::iterator it = _commandMap.find(command);
-    if (it != _commandMap.end()) {
-        ecmd cmd = it->second;
+	Log::debug("Command: '" + command + "' Args: " + args);
+    if ( _commandMap.find(command) != _commandMap.end()) {
+        ecmd cmd = _commandMap[command];
 		switch (cmd)
 		{
 			case CMD_PASS:
@@ -74,19 +74,25 @@ void	Server::executeCommand(const std::string &completeCommand, Client *client)
 			if (client->status() == REGISTERED)
 			{
 			case CMD_KICK:
+				KICK(args, client);
 				break;
 			case CMD_INVITE:
+				INVITE(args, client);
 				break;
 			case CMD_TOPIC:
 				TOPIC(args, client);
 				break;
 			case CMD_MODE:
+				MODE(args, client);
 				break;
 			case CMD_JOIN:
+				JOIN(args, client);
 				break;
 			case CMD_QUIT:
+				QUIT(client->fd());
 				break;
 			case CMD_PRIVMSG:
+				PRIVMSG(args, client);
 				break;
 			default:
 				break;

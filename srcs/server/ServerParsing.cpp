@@ -11,8 +11,8 @@
 void Server::JOIN(std::string args, Client *client)
 {
 	std::string::size_type spaceIndex = args.find(' ');
-	if (spaceIndex == std::string::npos || args.substr(spaceIndex + 1, args.size()).find(' ') != std::string::npos)
-		return ; //TODO renvoyer une erreur
+	// if (spaceIndex == std::string::npos || args.substr(spaceIndex + 1, args.size()).find(' ') != std::string::npos)
+	// 	return ; //TODO renvoyer une erreur
 
 	std::string channels = args.substr(0, spaceIndex);
 	std::string keys = args.substr(spaceIndex + 1, args.size());
@@ -24,7 +24,7 @@ void Server::JOIN(std::string args, Client *client)
 	std::vector<std::string>::iterator key = keyList.begin();
 	while (channel != channelList.end())
 	{
-		if (channel->at(0) != '#')
+		if (channel->at(0) != '&')
 			return ; //TODO TEJ
 		Channel *chan = findChannel(*channel);
 		if (chan)
@@ -55,7 +55,7 @@ void Server::TOPIC(const std::string &str, Client *client)
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("TOPIC"));
 	}
 
-	if (channel[0] != '#')
+	if (channel[0] != '&')
 		client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
 	for (std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
 	{
@@ -64,7 +64,6 @@ void Server::TOPIC(const std::string &str, Client *client)
 	}
 	if (!channelExist)
 		client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
-
 	if (str.size() == channel.size())
 	{
 
@@ -81,19 +80,9 @@ void Server::PRIVMSG(const std::string &str, Client *client)
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("PRIVMSG"));
 	if (message[0] != ':' || message.size() < 2)
 		return client->sendError(client->fd(), ERR_NOTEXTTOSEND(client->nickname()));
-	if ((destination.size() > 2) && (destination[0] == '%' && destination[1] == '#') )
+	if ((destination.size() > 1) && (destination[0] == '&') )
 	{
-		channel = channel.substr(2);
-		if (channel.empty())
-			return client->sendError(client->fd(), ERR_NORECIPIENT(client->nickname(), "PRIVMSG"));
-		Channel *channelDestination = findChannel(destination);
-		if (channelDestination)
-			channelDestination->shareMessage(message, client->nickname());
-		else
-			return ; //TODO renvoyer une erreur
-	} else if ((destination.size() > 3) && (destination[0] == '@' && destination[1] == '%' && destination[2] == '#'))
-	{
-		channel = channel.substr(3);
+		channel = channel.substr(1);
 		if (channel.empty())
 			return client->sendError(client->fd(), ERR_NORECIPIENT(client->nickname(), "PRIVMSG"));
 		Channel *channelDestination = findChannel(destination);
