@@ -84,7 +84,7 @@ private:
 	std::vector<std::string> split(const std::string &str, char delimiter);
 
 	void JOIN(std::string args, Client *client);
-	// void			TOPIC(const std::string &str, Client *client);
+	void			TOPIC(const std::string &str, Client *client);
 	// void			PRIVMSG(const std::string &str, Client *client);
 	void KICK(std::string args, Client *client);
 
