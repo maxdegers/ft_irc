@@ -26,6 +26,7 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	send(creator->fd(), msg.c_str(), msg.size(), 0);
 }
 
+
 void	Channel::removeOp(Client *remover, Client *clientToRemove)
 {
 	for (std::vector<Client *>::iterator i = _opUsers.begin(); i != _opUsers.end(); i++)
