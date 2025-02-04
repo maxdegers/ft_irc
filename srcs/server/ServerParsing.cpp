@@ -41,7 +41,6 @@
 // 	}
 // }
 
-/*
 void Server::TOPIC(const std::string &str, Client *client)
 {
     bool							channelExist = false;
@@ -105,22 +104,15 @@ void Server::INVITE(const std::string &cmd, Client *client)
 		if ((*it).nickname() == cmd.substr(0, cmd.find(' ')))
 			chan->inviteUser(client, &(*it));
 	}
-}*/
+}
 
 void Server::MODE(const std::string &cmd, Client *client)
 {
-	std::vector<std::string> all_args;
-	std::string cmdCpy = cmd;
+	std::vector<std::string> all_args = split(cmd, ' ');
 
-	for (size_t pos = cmdCpy.find(' '); pos != std::string::npos; pos = cmdCpy.find(' '))
-	{
-		all_args.push_back(cmdCpy.substr(0, pos));
-		cmdCpy.erase(0, pos + 1);
-	}
-	all_args.push_back(cmd);
+	if (client->fd() > 0)
+		all_args.at(4);
 }
-//     }
-// }
 
 // void PRIVMSG(const std::string &str, Client *client)
 // {

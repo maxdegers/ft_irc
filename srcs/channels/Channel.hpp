@@ -22,9 +22,6 @@ class Channel
 
 		void	inviteUser(Client *host, Client *guest);
 
-		std::string	getChannelName() const;
-
-		void	tryToJoin(Client *newClient, std::string password);
 		void	removeOp(Client *remover, Client *clientToRemove);
 		void	kickUser(Client *kicker, Client *toKick);
 

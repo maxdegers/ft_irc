@@ -1,7 +1,6 @@
 #include "Server.hpp"
 
 #include <iostream>
-#include <sstream>
 #include <csignal>
 #include <poll.h>
 
@@ -58,7 +57,7 @@ std::string Server::getPassword()
 	return (_password);
 }
 
-/* Parsing utils ************************************************************ */
+/* Utils ******************************************************************** */
 void	Server::separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args)
 {
 	std::string::size_type firstSpace = completeCommand.find(' ');
@@ -86,18 +85,6 @@ void	Server::truncCarriageReturns(std::string &str)
 	}
 }
 
-std::vector<std::string> Server::split(const std::string& str, char delimiter) {
-	std::vector<std::string> result;
-	std::string token;
-	std::istringstream tokenStream(str);
-
-	while (std::getline(tokenStream, token, delimiter)) {
-		result.push_back(token);
-	}
-
-	return result;
-}
-
 /* Utils ******************************************************************** */
 Client	*Server::findClient(int fd)
 {
@@ -105,16 +92,6 @@ Client	*Server::findClient(int fd)
 	{
 		if (_clients[i].fd() == fd)
 			return (&_clients[i]);
-	}
-	return (NULL);
-}
-
-Channel	*Server::findChannel(const std::string &name)
-{
-	for (size_t i = 0; i < _channels.size(); i++)
-	{
-		if (_channels[i].getChannelName() == name)
-			return (&_channels[i]);
 	}
 	return (NULL);
 }
