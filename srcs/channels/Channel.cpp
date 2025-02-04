@@ -71,7 +71,7 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 		_user.push_back(newClient);
 		if (std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()) != _invitedUsername.end())
 			_invitedUsername.erase(std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()));
-		shareMessage(":" + newClient->getUsername() + " JOIN #" + _channelName + "\r\n", "");
+		shareMessage(":" + newClient->getUsername() + " JOIN " + _channelName + "\r\n", "");
 	}
 	error.assign(ERR_BADCHANNELKEY(newClient->getUsername(), _channelName));
 	send(newClient->fd(), error.c_str(), error.size(), 0);
