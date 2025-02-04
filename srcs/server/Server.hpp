@@ -87,6 +87,8 @@ private:
 	void TOPIC(const std::string &str, Client *client);
 	void PRIVMSG(const std::string &str, Client *client);
 	void KICK(std::string args, Client *client);
+	void INVITE(const std::string &cmd, Client *client);
+	void MODE(const std::string &cmd, Client *client);
 
 };
 

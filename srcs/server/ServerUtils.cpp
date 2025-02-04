@@ -1,5 +1,4 @@
 #include "Server.hpp"
-
 #include <iostream>
 #include <sstream>
 #include <csignal>
@@ -58,7 +57,7 @@ std::string Server::getPassword()
 	return (_password);
 }
 
-/* Parsing utils ************************************************************ */
+/* Utils ******************************************************************** */
 void	Server::separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args)
 {
 	std::string::size_type firstSpace = completeCommand.find(' ');

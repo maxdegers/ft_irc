@@ -4,7 +4,6 @@
 
 #include "Channel.hpp"
 #include "Client.hpp"
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <algorithm>
 #include "Define.hpp"
@@ -38,6 +37,19 @@ void	Channel::shareMessage(const std::string& message, const std::string& userna
 	}
 }
 
+void	Channel::setTopicOP(Client *client, bool newRule)
+{
+	std::string error;
+
+	if (checkUserOP(client))
+		_topicOpOnly = newRule;
+	else
+	{
+		error.assign(ERR_CHANOPRIVSNEEDED(client->getUsername(), _channelName));
+		send(client->fd(), error.c_str(), error.size(), 0);
+	}
+}
+
 void	Channel::tryToJoin(Client *newClient, const std::string& password)
 {
 	std::string error;
@@ -59,7 +71,7 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 		_user.push_back(newClient);
 		if (std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()) != _invitedUsername.end())
 			_invitedUsername.erase(std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()));
-		shareMessage(":" + newClient->getUsername() + " JOIN #" + _channelName + "\r\n", "");
+		shareMessage(":" + newClient->getUsername() + " JOIN " + _channelName + "\r\n", "");
 	}
 	error.assign(ERR_BADCHANNELKEY(newClient->getUsername(), _channelName));
 	send(newClient->fd(), error.c_str(), error.size(), 0);
@@ -203,7 +215,7 @@ void Channel::kickUser(Client *kicker, Client *toKick)
 		{
 			if (*i == toKick)
 				_user.erase(i);
-			//shareMessage(kicker.getPrefix() + " " + "KICK #" + _channelName + " " + toKick->getUsername() + "\r\n", "");
+			shareMessage(RPL_KICKED(kicker->getUsername(), _channelName, toKick->getUsername()), "");
 		}
 	}
 	else
@@ -215,17 +227,34 @@ void Channel::kickUser(Client *kicker, Client *toKick)
 
 void Channel::inviteUser(Client *host, Client *guest)
 {
-	if (checkUser(host))
+	std::string awnser;
+	bool		inList = false;
+
+	for (std::vector<std::string >::iterator it = _invitedUsername.begin(); it != _invitedUsername.end(); it++)
 	{
-		_invitedUsername.push_back(guest->getUsername());
+		if ((*it) == guest->getUsername())
+			inList = true;
 	}
+	if (inList)
+	{
+		awnser.assign(ERR_USERONCHANNEL(host->nickname(), guest->nickname(), _channelName));
+		send(guest->fd(), awnser.c_str(), awnser.size(), 0);
+		return;
+	}
+	_invitedUsername.push_back(guest->getUsername());
+	awnser.assign(RPL_INVITING(guest->getUsername(), guest->nickname(), _channelName));
+	send(guest->fd(), awnser.c_str(), awnser.size(), 0);
+}
+
+void Channel::displayTopic(Client *client)
+{
+	if (_topic.empty())
+		RPL_NOTOPIC(client->getUsername(), _channelName);
+	else
+		RPL_TOPIC(client->getUsername(), _channelName, _topic);
 }
 
 std::string &Channel::getChannelName()
-{
-	return _channelName;
-}
-std::string Channel::getChannelName() const
 {
 	return _channelName;
 }

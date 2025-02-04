@@ -34,9 +34,12 @@ class Channel
 		void	setPassword(Client *client, const std::string& newPassword);
 		void	setTopic(Client *client, const std::string& newTopic);
 		void	setInviteOnly(Client *client, bool newInvite);
+		void	setTopicOP(Client *client, bool newRule);
 
 		bool	checkUserOP(Client *clientToCheck);
 		bool	checkUser(Client *clientToCheck);
+
+		void	displayTopic(Client *client);
 
 		std::string &getChannelName();
 

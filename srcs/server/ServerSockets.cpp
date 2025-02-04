@@ -40,7 +40,7 @@ void	Server::init()
 		throw(std::runtime_error("failed to listen on server socket"));
 	Log::debug("Server listening");
 
-	std::cout << _hostname << std::endl;
+	_hostname = inet_ntoa(addr.sin_addr);
 	newPoll.fd = _socketFD;
 	newPoll.events = POLLIN;
 	newPoll.revents = 0;
