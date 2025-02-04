@@ -109,6 +109,16 @@ Client	*Server::findClient(int fd)
 	return (NULL);
 }
 
+Client	*Server::findClient(std::string name)
+{
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].nickname() == name)
+			return (&_clients[i]);
+	}
+	return (NULL);
+}
+
 Channel	*Server::findChannel(const std::string &name)
 {
 	for (size_t i = 0; i < _channels.size(); i++)

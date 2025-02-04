@@ -39,8 +39,6 @@
 // 	}
 // }
 
-
-
 // void Server::TOPIC(const std::string &str, Client *client)
 // {
 //     bool channelExist = false;
@@ -115,3 +113,21 @@
 //             client->sendError(client->fd(), ERR_NOSUCHNICK(client->nickname(), destination));
 //     }
 // }
+
+void Server::KICK(std::string args, Client* client)
+{
+	std::vector<std::string>	argsList = split(args, ' ');
+	Channel						*channel = findChannel(argsList[0]);
+	Client						*clientTarget = findClient(argsList[1]);
+
+	if (!channel)
+		client->sendMessage(ERR_NOSUCHCHANNEL(argsList[0]), client);
+	if (!channel->checkUser(client))
+		client->sendMessage(ERR_NOTONCHANNEL(argsList[1]), client);
+	if (!clientTarget || !channel->checkUser(clientTarget))
+		client->sendMessage(ERR_USERNOTINCHANNEL(client->nickname(), argsList[0], argsList[1]), client);
+	if (!channel->checkUserOP(client))
+		client->sendMessage(ERR_CHANOPRIVSNEEDED(client->nickname(), argsList[0]), client);
+
+	channel->kickUser(client, clientTarget);
+}

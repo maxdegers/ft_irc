@@ -37,6 +37,7 @@ public:
 	void			executeCommand(const std::string &completeCommand, Client *client);
 
 	Client			*findClient(int fd);
+	Client			*findClient(std::string name);
 	Channel			*findChannel(const std::string &name);
 	bool			checkNick(const std::string &nick);
 
@@ -54,6 +55,7 @@ public:
 
 private:
 	std::string					_password;
+	std::string					_hostname;
 	int							_port;
 	int							_socketFD;
 	static bool					_signal;
@@ -84,6 +86,7 @@ private:
 	void JOIN(std::string args, Client *client);
 	// void			TOPIC(const std::string &str, Client *client);
 	// void			PRIVMSG(const std::string &str, Client *client);
+	void KICK(std::string args, Client *client);
 
 };
 
