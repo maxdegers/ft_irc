@@ -184,6 +184,6 @@ void Server::KICK(std::string args, Client* client)
 		client->sendMessage(ERR_CHANOPRIVSNEEDED(client->nickname(), argsList[0]), client);
 		return ;
 	}
-
+    
 	channel->kickUser(client, clientTarget);
 }
