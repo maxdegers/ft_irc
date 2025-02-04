@@ -11,6 +11,8 @@
 
 Channel::Channel(Client *creator, const std::string& channelName, const std::string& serverIP)
 {
+	std::string msg;
+
 	_opUsers.push_back(creator);
 	_user.push_back(creator);
 	_channelName = channelName;
@@ -18,8 +20,10 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	_topicOpOnly = true;
 	_maxUsers = 0;
 	_serverIP = serverIP;
-	shareMessage(":" + creator->getUsername() + " JOIN " + _channelName + "\r\n", "");
+	shareMessage(RPL_JOIN(creator->nickname(), _channelName), "");
 	Log::debug("User " + creator->getUsername() + " joined channel " + _channelName);
+	msg.assign(RPL_TOPIC(creator->nickname(), _channelName, _topic));
+	send(creator->fd(), msg.c_str(), msg.size(), 0);
 }
 
 void	Channel::removeOp(Client *remover, Client *clientToRemove)
