@@ -43,32 +43,21 @@ void Server::JOIN(std::string args, Client *client)
 
 void Server::TOPIC(const std::string &str, Client *client)
 {
-	bool channelExist = false;
+	Channel *chan;
 
 	if (str.empty())
 		client->sendError(client->fd(), ERR_NEEDMOREPARAMS("TOPIC"));
-
 	std::istringstream iss(str);
 	std::string channel, topic;
-
-	if (!(iss >> channel)) {
+	if (!(iss >> channel))
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("TOPIC"));
-	}
-
-	if (channel[0] != '#')
-		client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
-	for (std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
-	{
-	   if ((*it).getChannelName() == channel)
-			channelExist = true;
-	}
-	if (!channelExist)
-		client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
-
-	if (str.size() == channel.size())
-	{
-
-	}
+	chan = findChannel(channel);
+	if (!chan)
+		return client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
+	if (!(iss >> topic))
+		chan->displayTopic(client);
+	else
+		chan->setTopic(client, topic.substr(1, topic.size() - 1));
 }
 
 void Server::PRIVMSG(const std::string &str, Client *client)
