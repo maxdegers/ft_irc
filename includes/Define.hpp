@@ -16,6 +16,7 @@
 #define RPL_PART(nick, channel, msg) (":" + (nick) + " PART " + (channel) + " " + (msg) + "\r\n")
 
 //Privmsg
+#define ERR_NORECIPIENT(client, command) (":irc_server 411 " + (client) + " " + (command) + " :No recipient given\r\n") //ckech IF THIS IS THE RIGHT COMMAND
 #define ERR_NOSUCHNICK(client , nick) (":irc_server 401 " + (client) + " " + (nick) + " :No such nick\r\n")
 #define ERR_NOTEXTTOSEND(client) (":irc_server 412 " + (client) + " :No text to send\r\n")
 #define RPL_PRIVMSG(client, nick, msg) (":" + (client) + " PRIVMSG " + (nick) + " " + (msg) + "\r\n")

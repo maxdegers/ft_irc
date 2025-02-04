@@ -6,10 +6,39 @@
 #include "Client.hpp"
 #include <string>
 
-// void Server::JOIN(std::string args)
+#include <sstream>
+
+// void Server::JOIN(std::string args, Client *client)
 // {
-// 	//JOIN #channel1,#channel2,#channel3 key1,key2,key3
-// 	std::string::size_type
+// 	std::string::size_type spaceIndex = args.find(' ');
+// 	if (spaceIndex == std::string::npos || args.substr(spaceIndex + 1, args.size()).find(' ') != std::string::npos)
+// 		return ; //TODO renvoyer une erreur
+//
+// 	std::string channels = args.substr(0, spaceIndex);
+// 	std::string keys = args.substr(spaceIndex + 1, args.size());
+//
+// 	std::vector<std::string> channelList = split(channels, ',');
+// 	std::vector<std::string> keyList = split(channels, ',');
+//
+// 	std::vector<std::string>::iterator channel = channelList.begin();
+// 	std::vector<std::string>::iterator key = keyList.begin();
+// 	while (channel != channelList.end())
+// 	{
+// 		if (channel->at(0) != '#')
+// 			return ; //TODO TEJ
+// 		Channel *chan = findChannel(*channel);
+// 		if (chan)
+// 		{
+// 			chan->tryToJoin(client, *key);
+// 		}
+// 		else
+// 		{
+// 			Channel newChannel = Channel(client, *channel, "") // TODO rajouter l'IP du server
+// 			_channels.push_back(newChannel);
+// 		}
+// 		++key;
+// 		++channel;
+// 	}
 // }
 
 /*
@@ -90,3 +119,50 @@ void Server::MODE(const std::string &cmd, Client *client)
 	}
 	all_args.push_back(cmd);
 }
+//     }
+// }
+
+// void PRIVMSG(const std::string &str, Client *client)
+// {
+//     if (str.empty())
+//         client->sendError(client->fd(), ERR_NEEDMOREPARAMS("PRIVMSG"));
+//
+//     std::istringstream iss(str);
+//     std::string destination, message, channel;
+//
+// 	if (!(iss >> destination >> message))
+// 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("PRIVMSG"));
+//
+//     if (message[0] != ':' || message.size() < 2)
+//         return client->sendError(client->fd(), ERR_NOTEXTTOSEND(client->nickname()));
+//
+//     if ((destination.size() > 2) && (destination[0] == '%' && destination[1] == '#') )
+//     {
+//         channel = channel.substr(2);
+//         if (channel.empty())
+//             return client->sendError(client->fd(), ERR_NORECIPIENT(client->nickname(), "PRIVMSG"));
+//         //check if channel exist
+//
+//         //call sendToChannel
+//
+//
+//
+//     } else if ((destination.size() > 3) && (destination[0] == '@' && destination[1] == '%' && destination[2] == '#'))
+//     {
+//         channel = channel.substr(3);
+//         if (channel.empty())
+//             return client->sendError(client->fd(), ERR_NORECIPIENT(client->nickname(), "PRIVMSG"));
+//         //check if channel exist
+//         //call sendToChannel
+//
+//     }
+//     else
+//     {
+//         if ()//check if user exist)
+//         {
+//             //call sendToUser
+//         }
+//         else
+//             client->sendError(client->fd(), ERR_NOSUCHNICK(client->nickname(), destination));
+//     }
+// }
