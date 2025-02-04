@@ -39,7 +39,7 @@ class Channel
 		bool	checkUserOP(Client *clientToCheck);
 		bool	checkUser(Client *clientToCheck);
 
-		void	displayTopic(Client *client);
+		void	displayTopic(Client *client, bool toAll);
 
 		std::string &getChannelName();
 

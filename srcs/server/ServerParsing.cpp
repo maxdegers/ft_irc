@@ -5,7 +5,7 @@
 #include "Channel.hpp"
 #include "Client.hpp"
 #include <string>
-
+#include "Log.hpp"
 #include <sstream>
 
 void Server::JOIN(std::string args, Client *client)
@@ -55,7 +55,7 @@ void Server::TOPIC(const std::string &str, Client *client)
 	if (!chan)
 		return client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
 	if (!(iss >> topic))
-		chan->displayTopic(client);
+		chan->displayTopic(client, false);
 	else
 		chan->setTopic(client, topic.substr(1, topic.size() - 1));
 }

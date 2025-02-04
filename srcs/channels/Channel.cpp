@@ -120,12 +120,12 @@ void	Channel::setTopic(Client *clientWhoSetTopic, const std::string& newTopic)
 	if (_topicOpOnly && checkUserOP(clientWhoSetTopic))
 	{
 		_topic = newTopic;
-		displayTopic(clientWhoSetTopic);
+		displayTopic(clientWhoSetTopic, true);
 	}
 	else if (!_topicOpOnly && checkUser(clientWhoSetTopic))
 	{
 		_topic = newTopic;
-		displayTopic(clientWhoSetTopic);
+		displayTopic(clientWhoSetTopic, true);
 	}
 	else if (!checkUser(clientWhoSetTopic))
 	{
@@ -225,7 +225,7 @@ void Channel::kickUser(Client *kicker, Client *toKick)
 
 	if (checkUserOP(kicker))
 	{
-		for (std::vector<Client *>::iterator i = _user.begin(); i != _user.end(); i++)
+		for (std::vector<Client *>::iterator i = _user.begin(); i < _user.end(); i++)
 		{
 			if (*i == toKick)
 				_user.erase(i);
@@ -260,12 +260,18 @@ void Channel::inviteUser(Client *host, Client *guest)
 	send(guest->fd(), awnser.c_str(), awnser.size(), 0);
 }
 
-void Channel::displayTopic(Client *client)
+void Channel::displayTopic(Client *client, bool toAll)
 {
+	std::string msg;
+
 	if (_topic.empty())
-		RPL_NOTOPIC(client->getUsername(), _channelName);
+		msg.assign(RPL_NOTOPIC(client->getUsername(), _channelName));
 	else
-		RPL_TOPIC(client->getUsername(), _channelName, _topic);
+		msg.assign(RPL_TOPIC(client->getUsername(), _channelName, _topic));
+	if (toAll)
+		shareMessage(msg, "");
+	else
+		send(client->fd(), msg.c_str(), msg.size(), 0);
 }
 
 std::string &Channel::getChannelName()
