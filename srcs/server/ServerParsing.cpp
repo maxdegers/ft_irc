@@ -43,7 +43,6 @@
 
 void Server::TOPIC(const std::string &str, Client *client)
 {
-    bool							channelExist = false;
 	Channel							*chan;
 
     if (str.empty())
@@ -56,15 +55,8 @@ void Server::TOPIC(const std::string &str, Client *client)
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("TOPIC"));
     if (channel[0] != '#')
         client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
-    for (std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
-    {
-       if ((*it).getChannelName() == channel)
-	   {
-		   channelExist = true;
-		   chan = &(*it);
-	   }
-    }
-    if (!channelExist)
+    chan = findChannel(channel);
+    if (!chan)
 		return client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
 	if (!chan->checkUser(client))
 		return client->sendError(client->fd(), ERR_NOTONCHANNEL(channel));
@@ -78,22 +70,14 @@ void Server::TOPIC(const std::string &str, Client *client)
 
 void Server::INVITE(const std::string &cmd, Client *client)
 {
-	bool							channelExist = false;
 	Channel							*chan;
 	std::string						chanName;
 
 	if (cmd.find(' ') == std::string::npos)
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("INVITE"));
 	chanName = cmd.substr(cmd.find(' ') + 1, (cmd.size() - cmd.find(' ') + 1));
-	for (std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
-	{
-		if ((*it).getChannelName() == chanName)
-		{
-			channelExist = true;
-			chan = &(*it);
-		}
-	}
-	if (!channelExist)
+	chan = findChannel(chanName);
+	if (!chan)
 		return client->sendError(client->fd(), ERR_NOSUCHCHANNEL(chanName));
 	if (!chan->checkUser(client))
 		return client->sendError(client->fd(), ERR_NOTONCHANNEL(chanName));
@@ -109,9 +93,44 @@ void Server::INVITE(const std::string &cmd, Client *client)
 void Server::MODE(const std::string &cmd, Client *client)
 {
 	std::vector<std::string> all_args = split(cmd, ' ');
+	Channel							*chan;
 
-	if (client->fd() > 0)
-		all_args.at(4);
+	chan = findChannel(all_args.at(0));
+	if (!chan)
+		return client->sendError(client->fd(), ERR_NOSUCHCHANNEL(all_args.at(0)));
+	if (!chan->checkUser(client))
+		return client->sendError(client->fd(), ERR_NOTONCHANNEL(all_args.at(0)));
+	if (!chan->checkUserOP(client))
+		return client->sendError(client->fd(), ERR_CHANOPRIVSNEEDED(client->getUsername(), all_args.at(0)));
+	for (std::vector<std::string>::iterator it = all_args.begin() + 1; it != all_args.end(); it++)
+	{
+		if (((*it).at(0) == '-' || (*it).at(0) == '+') && (*it).size() == 2)
+		{
+			switch ((*it).at(1))
+			{
+				case 'i':
+					if ((*it).at(0) == '-')
+						chan->setInviteOnly(client, false);
+					else
+						chan->setInviteOnly(client, true);
+					break;
+				case 't':
+					if ((*it).at(0) == '-')
+						chan->setTopicOP(client, false);
+					else
+						chan->setTopicOP(client, true);
+					break;
+				case 'k':
+					break;
+				case 'o':
+					break;
+				case 'l':
+					break;
+				default:
+					break;
+			}
+		}
+	}
 }
 
 // void PRIVMSG(const std::string &str, Client *client)

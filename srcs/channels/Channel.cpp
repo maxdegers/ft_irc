@@ -37,6 +37,19 @@ void	Channel::shareMessage(const std::string& message, const std::string& userna
 	}
 }
 
+void	Channel::setTopicOP(Client *client, bool newRule)
+{
+	std::string error;
+
+	if (checkUserOP(client))
+		_topicOpOnly = newRule;
+	else
+	{
+		error.assign(ERR_CHANOPRIVSNEEDED(client->getUsername(), _channelName));
+		send(client->fd(), error.c_str(), error.size(), 0);
+	}
+}
+
 void	Channel::tryToJoin(Client *newClient, const std::string& password)
 {
 	std::string error;

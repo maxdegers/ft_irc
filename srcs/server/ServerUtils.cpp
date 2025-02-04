@@ -1,6 +1,6 @@
 #include "Server.hpp"
-
 #include <iostream>
+#include <sstream>
 #include <csignal>
 #include <poll.h>
 
