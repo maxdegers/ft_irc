@@ -53,8 +53,6 @@ void Server::TOPIC(const std::string &str, Client *client)
 
 	if (!(iss >> channel))
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("TOPIC"));
-    if (channel[0] != '#')
-        client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
     chan = findChannel(channel);
     if (!chan)
 		return client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
