@@ -6,6 +6,7 @@
 
 //Pass
 #define ERR_NEEDMOREPARAMS(command) (":irc_server 461 " + (std::string(command)) + " :Not enough parameters\n")
+#define ERR_NEEDLESSPARAMS(command) (":irc_server 461 " + (std::string(command)) + " :Too much parameters\n")
 #define ERR_ALREADYREGISTRED(target) ":irc_server 462 " + (target) + ":You may not reregister\n"
 #define ERR_NOTREGISTRED(target) ":irc_server 451 " + (target) + " :Register first.\n"
 #define ERR_PWNOTCHECK ":irc_server 808 :You must send PASS before any command\n"
