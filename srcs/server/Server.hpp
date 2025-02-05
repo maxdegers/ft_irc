@@ -89,6 +89,7 @@ private:
 	void KICK(std::string args, Client *client);
 	void INVITE(const std::string &cmd, Client *client);
 	void MODE(const std::string &cmd, Client *client);
+	void WHO(const std::string &args, Client *client);
 
 };
 

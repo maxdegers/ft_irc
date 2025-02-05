@@ -236,3 +236,17 @@ void Server::KICK(std::string args, Client* client)
     
 	channel->kickUser(client, clientTarget);
 }
+
+void Server::WHO(const std::string& args, Client *client)
+{
+	std::vector<std::string> tab = split(args, ' ');
+	if (tab.size() < 1)
+		client->sendMessage(ERR_NEEDMOREPARAMS("WHO"), client);
+	else if (tab.size() > 1)
+		client->sendMessage(ERR_NEEDLESSPARAMS("WHO"), client);
+	else
+	{
+		Channel *channel = findChannel(tab[0]);
+
+	}
+}

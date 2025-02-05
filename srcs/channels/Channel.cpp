@@ -108,6 +108,7 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 		}
 		error.assign(RPL_ENDOFNAMES(newClient->nickname(), _channelName));
 		send(newClient->fd(), error.c_str(), error.size(), 0);
+		return ;
 	}
 	error.assign(ERR_BADCHANNELKEY(newClient->getUsername(), _channelName));
 	send(newClient->fd(), error.c_str(), error.size(), 0);
