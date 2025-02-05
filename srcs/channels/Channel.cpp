@@ -224,8 +224,12 @@ void	Channel::addOp(Client *adder, Client *clientToAdd)
 {
 	std::string error;
 
+	Log::debug(adder->nickname() + " try to add " + clientToAdd->nickname() + "at the operator list");
 	if (checkUserOP(adder))
+	{
 		_opUsers.push_back(clientToAdd);
+		shareMessage(RPL_OMODE(_channelName, clientToAdd->nickname()), "");
+	}
 	else
 	{
 		error.assign(ERR_CHANOPRIVSNEEDED(adder->getUsername(), _channelName));

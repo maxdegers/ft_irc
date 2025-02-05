@@ -41,7 +41,7 @@
 #define ERR_NEEDMODPARAMS(nick, channel, command) (":irc_server 461 " + (nick) + " " + (channel) + " " + (std::string(command)) + " :Not enough parameters\n")
 #define RPL_CHANNELMODEIS(nick, channel, mode) (":irc_server 324 " + (nick) + " " + (channel) + " " + (mode) + "\n")
 #define RPL_MODE(channel, nick, message) (":" + (nick) + " MODE " + (channel) + (message))
-#define RPL_OMODE(channel, nick, message, nick2) (":" + (nick) + " MODE " + (channel) + (message) + (nick2) + " \n")
+#define RPL_OMODE(channel, nick) (":irc_server MODE " + (channel) + " +o " + (nick) + " \n")
 #define RPL_LMODE(channel, nick, message, number) (":" + (nick) + " MODE " + (channel) + (message) + (number) + "\n")
 
 //Invite
