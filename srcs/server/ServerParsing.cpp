@@ -10,34 +10,45 @@
 
 void Server::JOIN(std::string args, Client *client)
 {
-	std::string::size_type spaceIndex = args.find(' ');
-	// if (spaceIndex == std::string::npos || args.substr(spaceIndex + 1, args.size()).find(' ') != std::string::npos)
-	// 	return ; //TODO renvoyer une erreur
-
-	std::string channels = args.substr(0, spaceIndex);
-	std::string keys = args.substr(spaceIndex + 1, args.size());
-
-	std::vector<std::string> channelList = split(channels, ',');
-	std::vector<std::string> keyList = split(channels, ',');
-
-	std::vector<std::string>::iterator channel = channelList.begin();
-	std::vector<std::string>::iterator key = keyList.begin();
-	while (channel != channelList.end())
+	std::vector<std::string> tab = split(args, ' ');
+	std::string allowedChars = "0123456789abcdefghijklmnopqrstuvwxyz_-";
+	if (tab.size() <= 0)
 	{
-		if (channel->at(0) != '&')
-			return ; //TODO TEJ
-		Channel *chan = findChannel(*channel);
-		if (chan)
+		client->sendMessage(ERR_NEEDMOREPARAMS("JOIN"), client);
+		return ;
+	}
+	if (tab.size() == 1 && tab[0] == "0")
+	{
+		//TODO quit all channels
+		Log::debug(client->nickname() + " quitted all his channels");
+		return ;
+	}
+	Channel *channel = findChannel(tab[0]);
+	if (channel && tab.size() == 1)
+		channel->tryToJoin(client, "");
+	else if (channel && tab.size() == 2)
+		channel->tryToJoin(client, tab[1]);
+	else if (!channel)
+	{
+		if (tab[0][0] != '&')
 		{
-			chan->tryToJoin(client, *key);
+			client->sendMessage(ERR_NOSUCHCHANNEL(tab[0]), client);
+			return ;
 		}
+		for (std::string::iterator i = tab[0].begin(); i != tab[0].end(); ++i)
+		{
+			if (!allowedChars.find(*i))
+			{
+				client->sendMessage(ERR_BADCHANMASK(tab[0]), client);
+				return ;
+			}
+		}
+		Channel newChan;
+		if (tab.size() == 1)
+			newChan = Channel(client, tab[0], _hostname);
 		else
-		{
-			Channel newChannel = Channel(client, *channel, _hostname); // TODO rajouter l'IP du server
-			_channels.push_back(newChannel);
-		}
-		++key;
-		++channel;
+			newChan = Channel(client, tab[0], _hostname, tab[1]);
+		_channels.push_back(newChan);
 	}
 }
 
