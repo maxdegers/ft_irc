@@ -119,6 +119,8 @@ void Server::MODE(const std::string &cmd, Client *client)
 {
 	std::vector<std::string> all_args = split(cmd, ' ');
 	Channel							*chan;
+	bool							isPlus;
+	size_t							maxUser = 0;
 
 	chan = findChannel(all_args.at(0));
 	if (!chan)
@@ -146,15 +148,53 @@ void Server::MODE(const std::string &cmd, Client *client)
 					chan->setTopicOP(client, true);
 				break;
 			case 'k':
+				if ((*it).at(0) == '-')
+				{
+					chan->setPassword(client, "");
+				}
+				else
+				{
+					it++;
+					if (it >= all_args.end())
+						return client->sendError(client->fd(), ERR_NEEDMODPARAMS(client->nickname(), chan->getChannelName(), "+k"));
+					chan->setPassword(client, *it);
+				}
 				break;
 			case 'o':
+				isPlus = ((*it).at(0) == '-');
+				it++;
+				if (it >= all_args.end())
+					return client->sendError(client->fd(), ERR_NEEDMODPARAMS(client->nickname(), chan->getChannelName(), "+k"));
+				if (findClient(*it))
+				{
+					if (!isPlus)
+						chan->removeOp(client, findClient(*it));
+					else
+						chan->addOp(client, findClient(*it));
+				}
+				else
+					return client->sendError(client->fd(), ERR_NOSUCHNICK(client->nickname(), *it));
 				break;
 			case 'l':
+				if ((*it).at(0) == '+')
+				{
+					it++;
+					if (it >= all_args.end())
+						return client->sendError(client->fd(), ERR_NEEDMODPARAMS(client->nickname(), chan->getChannelName(), "+k"));
+					std::stringstream sstream(*it);
+					sstream >> maxUser;
+					chan->setMaxUser(client, maxUser);
+				}
+				else
+					chan->setMaxUser(client, 0);
 				break;
 			default:
+				return client->sendError(client->fd(), ERR_UNKNOWNMODE(client->nickname(), chan->getChannelName(), *it));
 				break;
 			}
 		}
+		else
+			return client->sendError(client->fd(), ERR_UNKNOWNMODE(client->nickname(), chan->getChannelName(), *it));
 	}
 }
 
