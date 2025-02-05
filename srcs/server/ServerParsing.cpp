@@ -7,6 +7,7 @@
 #include <string>
 #include "Log.hpp"
 #include <sstream>
+#include <unistd.h>
 
 void Server::JOIN(std::string args, Client *client)
 {
@@ -255,4 +256,27 @@ void Server::WHO(const std::string& args, Client *client)
 		Channel *channel = findChannel(tab[0]);
 		channel->listUsers(client);
 	}
+}
+
+void	Server::QUIT(int fd)
+{
+	for (std::vector<Client>::iterator it = _clients.begin(); it < _clients.end(); ++it)
+	{
+		if (it->fd() == fd)
+		{
+			//TODO broadcast the fact that the client disconnected to other clients
+			_clients.erase(it);
+			break ;
+		}
+	}
+	for (std::vector<struct pollfd>::iterator it = _fds.begin(); it < _fds.end(); ++it)
+	{
+		if (it->fd == fd)
+		{
+			_fds.erase(it);
+			break ;
+		}
+	}
+	close(fd);
+	Log::info("Client disconnected");
 }
