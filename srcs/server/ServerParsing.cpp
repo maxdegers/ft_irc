@@ -72,12 +72,12 @@ void Server::PRIVMSG(const std::string &str, Client *client)
 		return client->sendError(client->fd(), ERR_NOTEXTTOSEND(client->nickname()));
 	if ((destination.size() > 1) && (destination[0] == '&') )
 	{
-		channel = channel.substr(1);
-		if (channel.empty())
-			return client->sendError(client->fd(), ERR_NORECIPIENT(client->nickname(), "PRIVMSG"));
 		Channel *channelDestination = findChannel(destination);
 		if (channelDestination)
-			channelDestination->shareMessage(message, client->nickname());
+		{
+			client->sendMessage(RPL_PRIVMSG(client->nickname(), channelDestination->getChannelName(), message), channelDestination);
+			Log::debug("Message sent: " + message);
+		}
 		else
 			return ; //TODO renvoyer une erreur
 	}
@@ -86,7 +86,7 @@ void Server::PRIVMSG(const std::string &str, Client *client)
 		Client  *clientDestination = findClient(destination);
 		if (clientDestination)
 		{
-			// TODO send private msg
+			client->sendMessage(RPL_PRIVMSG(client->nickname(), clientDestination->nickname(), message), clientDestination);
 		}
 		else
 			client->sendError(client->fd(), ERR_NOSUCHNICK(client->nickname(), destination));
@@ -224,6 +224,6 @@ void Server::KICK(std::string args, Client* client)
 		client->sendMessage(ERR_CHANOPRIVSNEEDED(client->nickname(), argsList[0]), client);
 		return ;
 	}
-
+    
 	channel->kickUser(client, clientTarget);
 }

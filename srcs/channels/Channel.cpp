@@ -242,8 +242,10 @@ void Channel::kickUser(Client *kicker, Client *toKick)
 		for (std::vector<Client *>::iterator i = _user.begin(); i < _user.end(); i++)
 		{
 			if (*i == toKick)
+			{
+				shareMessage(RPL_KICKED(kicker->getUsername(), _channelName, toKick->getUsername()), "");
 				_user.erase(i);
-			shareMessage(RPL_KICKED(kicker->getUsername(), _channelName, toKick->getUsername()), "");
+			}
 		}
 	}
 	else
