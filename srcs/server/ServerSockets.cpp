@@ -69,8 +69,6 @@ void	Server::acceptClient()
 	Client client(incofd, inet_ntoa(clientAddr.sin_addr), this);
 	_clients.push_back(client);
 	_fds.push_back(newPoll);
-
-	Log::debug("Client accepted to socket");
 }
 
 void	Server::readData(int fd)
@@ -96,8 +94,6 @@ void	Server::readData(int fd)
 		return ;
 	}
 	buff[bytes] = '\0';
-	Log::debug("Data received from client");
-
 	// Append new data to the string
 	string += buff;
 

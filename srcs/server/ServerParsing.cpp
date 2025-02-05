@@ -78,28 +78,30 @@ void Server::PRIVMSG(const std::string &str, Client *client)
 	if (str.empty())
 		client->sendError(client->fd(), ERR_NEEDMOREPARAMS("PRIVMSG"));
 	std::istringstream iss(str);
-	std::string destination, message, channel;
+	std::string destination, message;
 	if (!(iss >> destination >> message))
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("PRIVMSG"));
-	if (message[0] != ':' || message.size() < 2)
-		return client->sendError(client->fd(), ERR_NOTEXTTOSEND(client->nickname()));
+
+	if (std::string::npos == str.find(':'))
+		return (client->sendError(client->fd(), ERR_NOTEXTTOSEND(client->nickname())));
+
+	std::string msg = str.substr(str.find(':'), str.size());
 	if ((destination.size() > 1) && (destination[0] == '&') )
 	{
 		Channel *channelDestination = findChannel(destination);
 		if (channelDestination)
 		{
-			client->sendMessage(RPL_PRIVMSG(client->nickname(), channelDestination->getChannelName(), message), channelDestination);
-			Log::debug("Message sent: " + message);
+			client->sendMessage(RPL_PRIVMSG(client->nickname(), channelDestination->getChannelName(), msg), channelDestination);
 		}
 		else
-			return ; //TODO renvoyer une erreur
+			return client->sendError(client->fd(), ERR_NOSUCHCHANNEL(destination));
 	}
 	else
 	{
 		Client  *clientDestination = findClient(destination);
 		if (clientDestination)
 		{
-			client->sendMessage(RPL_PRIVMSG(client->nickname(), clientDestination->nickname(), message), clientDestination);
+			client->sendMessage(RPL_PRIVMSG(client->nickname(), clientDestination->nickname(), msg), clientDestination);
 		}
 		else
 			client->sendError(client->fd(), ERR_NOSUCHNICK(client->nickname(), destination));
