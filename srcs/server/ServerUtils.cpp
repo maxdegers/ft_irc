@@ -19,6 +19,7 @@ Server::Server() : _port(-1), _socketFD(-1) {
     _commandMap.insert(std::make_pair("JOIN", CMD_JOIN));
     _commandMap.insert(std::make_pair("QUIT", CMD_QUIT));
     _commandMap.insert(std::make_pair("PRIVMSG", CMD_PRIVMSG));
+	_commandMap.insert(std::make_pair("WHO", CMD_WHO));
 }
 
 Server::Server(const Server &src)

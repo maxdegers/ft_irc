@@ -17,10 +17,14 @@ void Server::JOIN(std::string args, Client *client)
 		client->sendMessage(ERR_NEEDMOREPARAMS("JOIN"), client);
 		return ;
 	}
+	if (tab.size() > 2)
+	{
+		client->sendMessage(ERR_NEEDLESSPARAMS("JOIN"), client);
+		return ;
+	}
 	if (tab.size() == 1 && tab[0] == "0")
 	{
-		//TODO quit all channels
-		Log::debug(client->nickname() + " quitted all his channels");
+		client->removeChannels();
 		return ;
 	}
 	Channel *channel = findChannel(tab[0]);
@@ -104,8 +108,8 @@ void Server::PRIVMSG(const std::string &str, Client *client)
 
 void Server::INVITE(const std::string &cmd, Client *client)
 {
-	Channel							*chan;
-	std::string						chanName;
+	Channel			*chan;
+	std::string		chanName;
 
 	if (cmd.find(' ') == std::string::npos)
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("INVITE"));
@@ -126,10 +130,10 @@ void Server::INVITE(const std::string &cmd, Client *client)
 
 void Server::MODE(const std::string &cmd, Client *client)
 {
-	std::vector<std::string> all_args = split(cmd, ' ');
-	Channel							*chan;
-	bool							isPlus;
-	size_t							maxUser = 0;
+	std::vector<std::string>	all_args = split(cmd, ' ');
+	Channel						*chan;
+	bool						isPlus;
+	size_t						maxUser = 0;
 
 	chan = findChannel(all_args.at(0));
 	if (!chan)
@@ -247,6 +251,6 @@ void Server::WHO(const std::string& args, Client *client)
 	else
 	{
 		Channel *channel = findChannel(tab[0]);
-
+		channel->listUsers(client);
 	}
 }

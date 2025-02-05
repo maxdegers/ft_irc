@@ -74,6 +74,7 @@ private:
     	CMD_PASS,
     	CMD_NICK,
     	CMD_USER,
+		CMD_WHO,
     	CMD_UNKNOWN // Pour les commandes non reconnues
 	} 			ecmd;
 	std::map<std::string, ecmd> _commandMap;
