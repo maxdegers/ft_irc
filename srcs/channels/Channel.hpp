@@ -14,6 +14,8 @@ class Channel
 {
 	public:
 		Channel(Client *creator, const std::string& channelName, const std::string& serverIP);
+		Channel(Client *creator, const std::string& channelName, const std::string& serverIP, const std::string &password);
+
 		Channel(const Channel &old);
 		~Channel();
 		Channel &operator=(const Channel &old);

@@ -25,6 +25,23 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	shareMessage(RPL_ENDOFNAMES(creator->nickname(), _channelName), "");
 }
 
+Channel::Channel(Client *creator, const std::string& channelName, const std::string& serverIP, const std::string &password)
+{
+	_opUsers.push_back(creator);
+	_user.push_back(creator);
+	_channelName = channelName;
+	_inviteOnly = false;
+	_topicOpOnly = true;
+	_maxUsers = 0;
+	_serverIP = serverIP;
+	_password = password;
+	shareMessage(RPL_JOIN(creator->nickname(), _channelName), "");
+	Log::debug("User " + creator->getUsername() + " joined channel " + _channelName);
+	shareMessage(RPL_TOPIC(creator->nickname(), _channelName, _topic), "");
+	shareMessage(RPL_NAMREPLY(creator->nickname(), _channelName, "@"), "");
+	shareMessage(RPL_ENDOFNAMES(creator->nickname(), _channelName), "");
+}
+
 void	Channel::removeOp(Client *remover, Client *clientToRemove)
 {
 	for (std::vector<Client *>::iterator i = _opUsers.begin(); i != _opUsers.end(); i++)
@@ -224,8 +241,12 @@ void	Channel::addOp(Client *adder, Client *clientToAdd)
 {
 	std::string error;
 
+	Log::debug(adder->nickname() + " try to add " + clientToAdd->nickname() + "at the operator list");
 	if (checkUserOP(adder))
+	{
 		_opUsers.push_back(clientToAdd);
+		shareMessage(RPL_OMODE(_channelName, clientToAdd->nickname()), "");
+	}
 	else
 	{
 		error.assign(ERR_CHANOPRIVSNEEDED(adder->getUsername(), _channelName));
