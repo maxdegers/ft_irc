@@ -43,12 +43,10 @@ void Server::JOIN(std::string args, Client *client)
 				return ;
 			}
 		}
-		Channel newChan;
 		if (tab.size() == 1)
-			newChan = Channel(client, tab[0], _hostname);
+			_channels.push_back(Channel(client, tab[0], _hostname));
 		else
-			newChan = Channel(client, tab[0], _hostname, tab[1]);
-		_channels.push_back(newChan);
+			_channels.push_back(Channel(client, tab[0], _hostname, tab[1]));
 	}
 }
 
