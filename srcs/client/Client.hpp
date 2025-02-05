@@ -50,6 +50,10 @@ public:
 
 	void	sendError(const int fd, const std::string &error);
 
+	void	addChannel(Channel *channel);
+	void	removeChannel(Channel *channel);
+	void	removeChannels();
+
 private:
 	Server						*_server;
 	int							_fd;

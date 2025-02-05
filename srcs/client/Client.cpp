@@ -203,3 +203,26 @@ void Client::USER(const std::string &str) {
 
 	Log::debug(_username +" Status = ONGOING_REGISTERING");
 }
+
+void Client::addChannel(Channel *channel)
+{
+	_channels.push_back(channel);
+}
+
+void Client::removeChannel(Channel *channel)
+{
+	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); it++)
+	{
+		if ((*it) == channel)
+		{
+			_channels.erase(it);
+			return ;
+		}
+	}
+}
+
+void Client::removeChannels()
+{
+	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); it++)
+		(*it)->removeUser(this);
+}

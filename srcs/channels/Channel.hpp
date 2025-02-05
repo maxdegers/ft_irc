@@ -43,7 +43,11 @@ class Channel
 
 		void	displayTopic(Client *client, bool toAll);
 
+		void	listUsers(Client *client);
+
 		std::string &getChannelName();
+
+		void removeUser(Client *clientToRemove);
 
 	private:
 		std::vector<Client *>		_user;
