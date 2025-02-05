@@ -10,43 +10,34 @@
 
 void Server::JOIN(std::string args, Client *client)
 {
-	std::vector<std::string> tab = split(args, ' ');
-	std::string allowedChars = "0123456789abcdefghijklmnopqrstuvwxyz_-";
-	if (tab.size() <= 0)
+	std::string::size_type spaceIndex = args.find(' ');
+	// if (spaceIndex == std::string::npos || args.substr(spaceIndex + 1, args.size()).find(' ') != std::string::npos)
+	// 	return ; //TODO renvoyer une erreur
+
+	std::string channels = args.substr(0, spaceIndex);
+	std::string keys = args.substr(spaceIndex + 1, args.size());
+
+	std::vector<std::string> channelList = split(channels, ',');
+	std::vector<std::string> keyList = split(channels, ',');
+
+	std::vector<std::string>::iterator channel = channelList.begin();
+	std::vector<std::string>::iterator key = keyList.begin();
+	while (channel != channelList.end())
 	{
-		client->sendMessage(ERR_NEEDMOREPARAMS("JOIN"), client);
-		return ;
-	}
-	if (tab.size() == 1 && tab[0] == "0")
-	{
-		//TODO quit all channels
-		Log::debug(client->nickname() + " quitted all his channels");
-		return ;
-	}
-	Channel *channel = findChannel(tab[0]);
-	if (channel && tab.size() == 1)
-		channel->tryToJoin(client, "");
-	else if (channel && tab.size() == 2)
-		channel->tryToJoin(client, tab[1]);
-	else if (!channel)
-	{
-		if (tab[0][0] != '&')
+		if (channel->at(0) != '&')
+			return ; //TODO TEJ
+		Channel *chan = findChannel(*channel);
+		if (chan)
 		{
-			client->sendMessage(ERR_NOSUCHCHANNEL(tab[0]), client);
-			return ;
+			chan->tryToJoin(client, *key);
 		}
-		for (std::string::iterator i = tab[0].begin(); i != tab[0].end(); ++i)
-		{
-			if (!allowedChars.find(*i))
-			{
-				client->sendMessage(ERR_BADCHANMASK(tab[0]), client);
-				return ;
-			}
-		}
-		if (tab.size() == 1)
-			_channels.push_back(Channel(client, tab[0], _hostname));
 		else
-			_channels.push_back(Channel(client, tab[0], _hostname, tab[1]));
+		{
+			Channel newChannel = Channel(client, *channel, _hostname); // TODO rajouter l'IP du server
+			_channels.push_back(newChannel);
+		}
+		++key;
+		++channel;
 	}
 }
 
@@ -74,28 +65,30 @@ void Server::PRIVMSG(const std::string &str, Client *client)
 	if (str.empty())
 		client->sendError(client->fd(), ERR_NEEDMOREPARAMS("PRIVMSG"));
 	std::istringstream iss(str);
-	std::string destination, message, channel;
+	std::string destination, message;
 	if (!(iss >> destination >> message))
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("PRIVMSG"));
-	if (message[0] != ':' || message.size() < 2)
-		return client->sendError(client->fd(), ERR_NOTEXTTOSEND(client->nickname()));
+
+	if (std::string::npos == str.find(':'))
+		return (client->sendError(client->fd(), ERR_NOTEXTTOSEND(client->nickname())));
+	
+	std::string msg = str.substr(str.find(':'), str.size());
 	if ((destination.size() > 1) && (destination[0] == '&') )
 	{
 		Channel *channelDestination = findChannel(destination);
 		if (channelDestination)
 		{
-			client->sendMessage(RPL_PRIVMSG(client->nickname(), channelDestination->getChannelName(), message), channelDestination);
-			Log::debug("Message sent: " + message);
+			client->sendMessage(RPL_PRIVMSG(client->nickname(), channelDestination->getChannelName(), msg), channelDestination);
 		}
 		else
-			return ; //TODO renvoyer une erreur
+			return client->sendError(client->fd(), ERR_NOSUCHCHANNEL(destination));
 	}
 	else
 	{
 		Client  *clientDestination = findClient(destination);
 		if (clientDestination)
 		{
-			client->sendMessage(RPL_PRIVMSG(client->nickname(), clientDestination->nickname(), message), clientDestination);
+			client->sendMessage(RPL_PRIVMSG(client->nickname(), clientDestination->nickname(), msg), clientDestination);
 		}
 		else
 			client->sendError(client->fd(), ERR_NOSUCHNICK(client->nickname(), destination));

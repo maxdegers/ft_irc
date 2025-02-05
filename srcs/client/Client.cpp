@@ -94,8 +94,6 @@ void	Client::PASS(const std::string &str)
 {
 	std::string error;
 
-	Log::debug("Args = '" + str + "'");
-	Log::debug("Server Password = '" + this->_server->getPassword() + "'");
 	if (this->_status > NOT_REGISTERED)
 		error = ERR_ALREADYREGISTRED(this->_nickname);
 
@@ -112,7 +110,6 @@ void	Client::PASS(const std::string &str)
 	}
 
 	this->_status = ONGOING_REGISTERING;
-	Log::debug("Client Status = ONGOING_REGISTERING");
 }
 
 void Client::NICK(const std::string &str) {
@@ -155,7 +152,6 @@ void Client::NICK(const std::string &str) {
 		return ;
 	}
 
-	Log::debug(_nickname +" Status = ONGOING_REGISTERING");
 }
 
 
@@ -200,6 +196,4 @@ void Client::USER(const std::string &str) {
 		return ;
 
 	}
-
-	Log::debug(_username +" Status = ONGOING_REGISTERING");
 }
