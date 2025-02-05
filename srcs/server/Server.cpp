@@ -57,7 +57,6 @@ void	Server::executeCommand(const std::string &completeCommand, Client *client)
 
 	separateCmdArg(completeCommand, command, args);
 
-	Log::debug("Command: '" + command + "' Args: " + args);
     if ( _commandMap.find(command) != _commandMap.end()) {
         ecmd cmd = _commandMap[command];
 		switch (cmd)
