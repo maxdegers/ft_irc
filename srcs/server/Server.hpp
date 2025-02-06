@@ -64,18 +64,18 @@ private:
 	std::vector<Channel>		_channels;
 
 	typedef enum Command {
-    	CMD_KICK,
-   	 	CMD_INVITE,
-    	CMD_TOPIC,
-    	CMD_MODE,
-    	CMD_JOIN,
-    	CMD_QUIT,
-    	CMD_PRIVMSG,
-    	CMD_PASS,
-    	CMD_NICK,
-    	CMD_USER,
+		CMD_KICK,
+		CMD_INVITE,
+		CMD_TOPIC,
+		CMD_MODE,
+		CMD_JOIN,
+		CMD_QUIT,
+		CMD_PRIVMSG,
+		CMD_PASS,
+		CMD_NICK,
+		CMD_USER,
 		CMD_WHO,
-    	CMD_UNKNOWN // Pour les commandes non reconnues
+		CMD_UNKNOWN // Pour les commandes non reconnues
 	} 			ecmd;
 	std::map<std::string, ecmd> _commandMap;
 
