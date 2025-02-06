@@ -30,6 +30,7 @@ public:
 	std::string	ip() const;
 	std::string	&getUsername();
 	std::string &getPrefix();
+	std::string realname() const;
 	
 	t_status	status() const;
 	std::string	incompleteMessage() const;

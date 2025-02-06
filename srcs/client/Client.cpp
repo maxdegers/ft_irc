@@ -52,6 +52,12 @@ std::string	&Client::getUsername()
 	return _username;
 }
 
+std::string Client::realname() const
+{
+	return _realname;
+}
+
+
 std::string &Client::getPrefix()
 {
 	return _prefix;

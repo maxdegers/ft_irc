@@ -34,7 +34,7 @@
 #define RPL_KICKED(client, channel, kicked) (":" + (client) + " KICK " + (channel) + " " + (kicked) + "\r\n")
 
 //Who
-#define RPL_WHOREPLY(who) (":irc_server 352 " + (who) + "\r\n")
+#define RPL_WHOREPLY(client, channel, username, host, nick, status, hopcount, realname) (":irc_server 352 " + (client) + " " + (channel) + " " + (username) + " " + (host) + " irc_server " + (nick) + " " + (status) + " :" + (hopcount) + " " + (realname) + "\r\n")
 #define RPL_ENDOFWHO(nick, channel) (":irc_server 315 " + (nick) + " " + (channel) + " :End of WHO list\r\n")
 
 //Mode
@@ -62,8 +62,8 @@
 #define ERR_BADCHANMASK(channel) (":irc_server 476 " + (channel) + " :Bad Channel Mask\r\n")
 
 //Join
-#define RPL_JOIN(nick, channel) (":" + (nick) + " JOIN " + (channel) + "\r\n")
-#define RPL_NAMREPLY(client, channel, prenick) (":irc_server 353 " + (client) + " = " + (channel) + " :" + (prenick) + "\r\n")
+#define	RPL_JOIN(nick, channel) (":" + (nick) + " JOIN " + (channel) + "\r\n")
+#define RPL_NAMREPLY(client, channel, prenick, nick) (":irc_server 353 " + (client) + " = " + (channel) + " :" + (prenick) + (nick) + "\r\n")
 #define ERR_TOOMANYCHANNELS(client, channel) (":irc_server 405 " + (client) + " " + (channel) + " :You have joined too many channels\r\n")
 #define ERR_BADCHANNELKEY(client, channel) (":irc_server 475 " + (client) + " " + (channel) + " :Cannot join channel (+k)\r\n")
 #define RPL_ENDOFNAMES(nick, channel) (":irc_server 366 " + (nick) + " " + (channel) + " :End of /NAMES list\r\n")
