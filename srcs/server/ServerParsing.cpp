@@ -4,6 +4,7 @@
 #include <sstream>
 #include "Channel.hpp"
 #include "Client.hpp"
+#include <poll.h>
 #include <string>
 #include "Log.hpp"
 #include <sstream>
