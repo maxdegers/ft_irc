@@ -10,8 +10,24 @@
 #include <sstream>
 #include <unistd.h>
 
+static int	checkStatus(Client *client)
+{
+	if (client->status() == NOT_REGISTERED) {
+		client->sendMessage(ERR_PWNOTCHECK, client);
+		return 0;
+	}
+	if (client->status() == ONGOING_REGISTERING) {
+		client->sendMessage(ERR_NOTREGISTRED(client->nickname()), client);
+		return 0;
+	}
+
+	return 1;
+}
+
 void Server::JOIN(std::string args, Client *client)
 {
+	if (checkStatus(client) == 0)
+		return ;
 	std::vector<std::string> tab = split(args, ' ');
 	std::string allowedChars = "0123456789abcdefghijklmnopqrstuvwxyz_-";
 	if (tab.size() <= 0)
@@ -64,6 +80,8 @@ void Server::JOIN(std::string args, Client *client)
 
 void Server::TOPIC(const std::string &str, Client *client)
 {
+	if (checkStatus(client) == 0)
+		return ;
 	Channel *chan;
 
 	if (str.empty())
@@ -90,6 +108,8 @@ void Server::TOPIC(const std::string &str, Client *client)
 
 void Server::PRIVMSG(const std::string &str, Client *client)
 {
+	if (checkStatus(client) == 0)
+		return ;
 	if (str.empty())
 		client->sendError(client->fd(), ERR_NEEDMOREPARAMS("PRIVMSG"));
 	std::istringstream iss(str);
@@ -126,6 +146,8 @@ void Server::PRIVMSG(const std::string &str, Client *client)
 
 void Server::INVITE(const std::string &cmd, Client *client)
 {
+	if (checkStatus(client) == 0)
+		return ;
 	Channel			*chan;
 	std::string		chanName;
 
@@ -148,6 +170,8 @@ void Server::INVITE(const std::string &cmd, Client *client)
 
 void Server::MODE(const std::string &cmd, Client *client)
 {
+	if (checkStatus(client) == 0)
+		return ;
 	std::vector<std::string>	all_args = split(cmd, ' ');
 	Channel						*chan;
 	bool						isPlus;
@@ -230,6 +254,8 @@ void Server::MODE(const std::string &cmd, Client *client)
 
 void Server::KICK(std::string args, Client* client)
 {
+	if (checkStatus(client) == 0)
+		return ;
 	std::vector<std::string>	argsList = split(args, ' ');
 	Channel						*channel = findChannel(argsList[0]);
 	Client						*clientTarget = findClient(argsList[1]);
@@ -259,6 +285,8 @@ void Server::KICK(std::string args, Client* client)
 
 void Server::WHO(const std::string& args, Client *client)
 {
+	if (checkStatus(client) == 0)
+		return ;
 	std::vector<std::string> tab = split(args, ' ');
 	if (tab.size() < 1)
 		client->sendMessage(ERR_NEEDMOREPARAMS("WHO"), client);
@@ -277,6 +305,8 @@ void	Server::QUIT(int fd)
 	{
 		if (it->fd() == fd)
 		{
+			it->removeChannels();
+			Log::info("User " + it->nickname() + " disconnected");
 			//TODO broadcast the fact that the client disconnected to other clients
 			_clients.erase(it);
 			break ;
@@ -291,5 +321,4 @@ void	Server::QUIT(int fd)
 		}
 	}
 	close(fd);
-	Log::info("Client disconnected");
 }
