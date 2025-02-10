@@ -87,7 +87,7 @@ void Client::sendMessage(std::string message, Client *receive)
 
 void Client::sendMessage(std::string message, Channel *receive)
 {
-	receive->shareMessage(message, _username);
+	receive->shareMessage(message, _nickname);
 }
 
 void	Client::PASS(const std::string &str)
