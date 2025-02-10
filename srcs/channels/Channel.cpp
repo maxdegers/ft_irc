@@ -19,7 +19,8 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	_maxUsers = 0;
 	_serverIP = serverIP;
 	shareMessage(RPL_JOIN(creator->nickname(), _channelName), "");
-	Log::debug("User " + creator->getUsername() + " joined channel " + _channelName);
+	Log::info("User " + creator->getUsername() + " created channel " + _channelName);
+	Log::info("User " + creator->getUsername() + " joined channel " + _channelName);
 	shareMessage(RPL_TOPIC(creator->nickname(), _channelName, _topic), "");
 	shareMessage(RPL_NAMREPLY(creator->nickname(), channelName, std::string("@"), creator->nickname()), "");
 	shareMessage(RPL_ENDOFNAMES(creator->nickname(), channelName), "");
@@ -37,7 +38,8 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	_serverIP = serverIP;
 	_password = password;
 	shareMessage(RPL_JOIN(creator->nickname(), _channelName), "");
-	Log::debug("User " + creator->getUsername() + " joined channel " + _channelName);
+	Log::info("User " + creator->getUsername() + " created channel " + _channelName);
+	Log::info("User " + creator->getUsername() + " joined channel " + _channelName);
 	shareMessage(RPL_TOPIC(creator->nickname(), _channelName, _topic), "");
 	shareMessage(RPL_NAMREPLY(creator->nickname(), channelName, std::string("@"), creator->nickname()), "");
 	shareMessage(RPL_ENDOFNAMES(creator->nickname(), channelName), "");
@@ -103,7 +105,7 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 		newClient->addChannel(this);
 		if (std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()) != _invitedUsername.end())
 			_invitedUsername.erase(std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()));
-		Log::debug("User " + newClient->nickname() + " joined channel " + _channelName);
+		Log::info("User " + newClient->nickname() + " joined channel " + _channelName);
 		shareMessage(":" + newClient->nickname() + " JOIN " + _channelName + "\r\n", "");
 		error.assign(RPL_TOPIC(newClient->nickname(), _channelName, _topic));
 		send(newClient->fd(), error.c_str(), error.size(), 0);

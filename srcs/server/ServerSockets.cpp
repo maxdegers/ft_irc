@@ -66,8 +66,7 @@ void	Server::acceptClient()
 	newPoll.events = POLLIN;
 	newPoll.revents = 0;
 
-	Client client(incofd, inet_ntoa(clientAddr.sin_addr), this);
-	_clients.push_back(client);
+	_clients.push_back(Client(incofd, inet_ntoa(clientAddr.sin_addr), this));
 	_fds.push_back(newPoll);
 }
 

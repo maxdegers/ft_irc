@@ -271,6 +271,7 @@ void	Server::QUIT(int fd)
 	{
 		if (it->fd() == fd)
 		{
+			Log::info("User " + it->nickname() + " disconnected");
 			//TODO broadcast the fact that the client disconnected to other clients
 			_clients.erase(it);
 			break ;
@@ -285,5 +286,4 @@ void	Server::QUIT(int fd)
 		}
 	}
 	close(fd);
-	Log::info("Client disconnected");
 }

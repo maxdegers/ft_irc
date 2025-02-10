@@ -8,17 +8,17 @@
 bool	Server::_signal = false;
 
 /* Constructors ************************************************************* */
-Server::Server() : _port(-1), _socketFD(-1) {
+Server::Server() : _hostname("irc_server"), _port(-1), _socketFD(-1) {
 	_commandMap.insert(std::make_pair("PASS", CMD_PASS));
-    _commandMap.insert(std::make_pair("USER", CMD_USER));
-    _commandMap.insert(std::make_pair("NICK", CMD_NICK));
-    _commandMap.insert(std::make_pair("KICK", CMD_KICK));
-    _commandMap.insert(std::make_pair("INVITE", CMD_INVITE));
-    _commandMap.insert(std::make_pair("TOPIC", CMD_TOPIC));
-    _commandMap.insert(std::make_pair("MODE", CMD_MODE));
-    _commandMap.insert(std::make_pair("JOIN", CMD_JOIN));
-    _commandMap.insert(std::make_pair("QUIT", CMD_QUIT));
-    _commandMap.insert(std::make_pair("PRIVMSG", CMD_PRIVMSG));
+	_commandMap.insert(std::make_pair("USER", CMD_USER));
+	_commandMap.insert(std::make_pair("NICK", CMD_NICK));
+	_commandMap.insert(std::make_pair("KICK", CMD_KICK));
+	_commandMap.insert(std::make_pair("INVITE", CMD_INVITE));
+	_commandMap.insert(std::make_pair("TOPIC", CMD_TOPIC));
+	_commandMap.insert(std::make_pair("MODE", CMD_MODE));
+	_commandMap.insert(std::make_pair("JOIN", CMD_JOIN));
+	_commandMap.insert(std::make_pair("QUIT", CMD_QUIT));
+	_commandMap.insert(std::make_pair("PRIVMSG", CMD_PRIVMSG));
 	_commandMap.insert(std::make_pair("WHO", CMD_WHO));
 }
 
@@ -166,7 +166,6 @@ void	Server::closeFDs()
 	for (int i = 3; i < 1024; i++)
 		close(i);
 }
-
 
 /* Exceptions *************************************************************** */
 const char* Server::ArgumentsErrorException::what() const throw()

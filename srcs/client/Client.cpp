@@ -8,14 +8,9 @@
 #include <sys/socket.h>
 
 /* Constructors ************************************************************* */
-Client::Client(int fd, const std::string &ip, Server *serv) : 	_server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip)
-{
-}
+Client::Client(int fd, const std::string &ip, Server *serv) : 	_server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip) {}
 
-Client::~Client()
-{
-	Log::debug("Client object deleted");
-}
+Client::~Client() {}
 
 /* Operators **************************************************************** */
 bool Client::operator==(const Client &compare)
@@ -154,10 +149,9 @@ void Client::NICK(const std::string &str) {
 	if (!_username.empty()) {
 		_status = REGISTERED;
 		sendMessage(RPL_WELCOME(_nickname, _nickname), this);
-		Log::info(_nickname + " is now registered");
+		Log::info("User " + _nickname + " registered");
 		return ;
 	}
-
 }
 
 
@@ -198,7 +192,7 @@ void Client::USER(const std::string &str) {
 		this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
 		this->_status = REGISTERED;
 		sendMessage(RPL_WELCOME(this->_nickname, this->_nickname), this);
-		Log::info(_nickname + " is now registered");
+		Log::info("User " + _nickname + " registered");
 		return ;
 
 	}
