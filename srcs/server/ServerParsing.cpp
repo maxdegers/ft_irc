@@ -174,9 +174,7 @@ void Server::MODE(const std::string &cmd, Client *client)
 				break;
 			case 'k':
 				if ((*it).at(0) == '-')
-				{
 					chan->setPassword(client, "");
-				}
 				else
 				{
 					it++;
@@ -186,10 +184,11 @@ void Server::MODE(const std::string &cmd, Client *client)
 				}
 				break;
 			case 'o':
-				isPlus = ((*it).at(0) == '-');
+				isPlus = ((*it).at(0) == '+');
 				it++;
 				if (it >= all_args.end())
 					return client->sendError(client->fd(), ERR_NEEDMODPARAMS(client->nickname(), chan->getChannelName(), "+k"));
+				Log::debug("Client: " + *it + " need to be OP");
 				if (findClient(*it))
 				{
 					if (!isPlus)
@@ -249,7 +248,6 @@ void Server::KICK(std::string args, Client* client)
 		client->sendMessage(ERR_CHANOPRIVSNEEDED(client->nickname(), argsList[0]), client);
 		return ;
 	}
-    
 	channel->kickUser(client, clientTarget);
 }
 

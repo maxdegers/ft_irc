@@ -70,7 +70,10 @@ void	Channel::setTopicOP(Client *client, bool newRule)
 	std::string error;
 
 	if (checkUserOP(client))
+	{
 		_topicOpOnly = newRule;
+		shareMessage(RPL_MODE(_channelName, client->nickname(), "+t"), "");
+	}
 	else
 	{
 		error.assign(ERR_CHANOPRIVSNEEDED(client->getUsername(), _channelName));
@@ -274,7 +277,7 @@ void Channel::kickUser(Client *kicker, Client *toKick)
 		{
 			if (*i == toKick)
 			{
-				shareMessage(RPL_KICKED(kicker->getUsername(), _channelName, toKick->getUsername()), "");
+				shareMessage(RPL_KICKED(kicker->nickname(), _channelName, toKick->nickname()), "");
 				_user.erase(i);
 				toKick->removeChannel(this);
 			}
