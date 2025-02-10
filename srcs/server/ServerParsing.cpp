@@ -50,9 +50,15 @@ void Server::JOIN(std::string args, Client *client)
 			}
 		}
 		if (tab.size() == 1)
+		{
 			_channels.push_back(Channel(client, tab[0], _hostname));
+			client->addChannel(&_channels.back());
+		}
 		else
+		{
 			_channels.push_back(Channel(client, tab[0], _hostname, tab[1]));
+			client->addChannel(&_channels.back());
+		}
 	}
 }
 

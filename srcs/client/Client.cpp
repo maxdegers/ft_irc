@@ -211,7 +211,7 @@ void Client::addChannel(Channel *channel)
 
 void Client::removeChannel(Channel *channel)
 {
-	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); it++)
+	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); ++it)
 	{
 		if ((*it) == channel)
 		{
@@ -223,6 +223,12 @@ void Client::removeChannel(Channel *channel)
 
 void Client::removeChannels()
 {
-	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); it++)
-		(*it)->removeUser(this);
+	std::cout << _channels.size() << std::endl;
+	std::cout << _channels[0]->getUserAmout() << std::endl;
+	for (std::vector<Channel *>::iterator it = _channels.begin(); _channels.empty() || it < _channels.end(); it++)
+	{
+		std::cout << (*it)->getUserAmout() << std::endl;
+		(*it)->removeUser(this->nickname());
+	}
+	_channels.clear();
 }

@@ -23,7 +23,6 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	shareMessage(RPL_TOPIC(creator->nickname(), _channelName, _topic), "");
 	shareMessage(RPL_NAMREPLY(creator->nickname(), channelName, std::string("@"), creator->nickname()), "");
 	shareMessage(RPL_ENDOFNAMES(creator->nickname(), channelName), "");
-	creator->addChannel(this);
 }
 
 Channel::Channel(Client *creator, const std::string& channelName, const std::string& serverIP, const std::string &password)
@@ -41,7 +40,6 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	shareMessage(RPL_TOPIC(creator->nickname(), _channelName, _topic), "");
 	shareMessage(RPL_NAMREPLY(creator->nickname(), channelName, std::string("@"), creator->nickname()), "");
 	shareMessage(RPL_ENDOFNAMES(creator->nickname(), channelName), "");
-	creator->addChannel(this);
 }
 
 void	Channel::removeOp(Client *remover, Client *clientToRemove)
@@ -91,13 +89,13 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 		{
 			error.assign(ERR_INVITEONLYCHAN(newClient->getUsername(), _channelName));
 			send(newClient->fd(), error.c_str(), error.size(), 0);
-			return ;//ERR_INVITEONLYCHAN 471;
+			return ;
 		}
 		if (_maxUsers && _user.size() + 1 > _maxUsers)
 		{
 			error.assign(ERR_CHANNELISFULL(newClient->getUsername(), _channelName));
 			send(newClient->fd(), error.c_str(), error.size(), 0);
-			return ; //ERR_CHANNELISFULL 473;
+			return ;
 		}
 		_user.push_back(newClient);
 		newClient->addChannel(this);
@@ -187,7 +185,10 @@ void	Channel::setInviteOnly(Client *client, bool newInvite)
 	if (checkUserOP(client))
 	{
 		_inviteOnly = newInvite;
-		shareMessage(RPL_CHANNELMODEIS(client->nickname(), _channelName, "+i"), "");
+		if (_inviteOnly)
+			shareMessage(RPL_CHANNELMODEIS(client->nickname(), _channelName, "+i"), "");
+		else
+			shareMessage(RPL_CHANNELMODEIS(client->nickname(), _channelName, "-i"), "");
 	}
 	else
 	{
@@ -348,15 +349,24 @@ void Channel::listUsers(Client *client)
 	send(client->fd(), msg.c_str(), msg.size(), 0);
 }
 
-void Channel::removeUser(Client *clientToRemove)
+// FONCTION A NE PAS SE SERVIR POUR UN CLIENT TOUJOURS CONNECTE
+void Channel::removeUser(const std::string &name)
 {
-	for (std::vector<Client *>::iterator i = _user.begin(); i < _user.end(); i++)
+	std::cout << _user.size() << std::endl;
+
+	for (std::vector<Client *>::iterator i = _user.begin(); _user.empty() || i < _user.end(); i++)
 	{
-		if (*i == clientToRemove)
+		if ((*i)->nickname() == name)
 		{
-			shareMessage(RPL_KICKED(clientToRemove->getUsername(), _channelName, clientToRemove->getUsername()), "");
+			Log::info("client: " + name + "is now disconnected");
+			shareMessage(RPL_KICKED(name, _channelName, name), "");
 			_user.erase(i);
-			clientToRemove->removeChannel(this);
+			return;
 		}
 	}
+}
+
+size_t Channel::getUserAmout()
+{
+	return _user.size();
 }

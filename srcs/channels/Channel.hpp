@@ -28,6 +28,7 @@ class Channel
 
 		void	removeOp(Client *remover, Client *clientToRemove);
 		void	kickUser(Client *kicker, Client *toKick);
+		size_t	getUserAmout();
 
 		void	tryToJoin(Client *newClient, const std::string& password);
 		void	addOp(Client *adder, Client *clientToAdd);
@@ -47,7 +48,7 @@ class Channel
 
 		std::string &getChannelName();
 
-		void removeUser(Client *clientToRemove);
+		void removeUser(const std::string &name);
 
 	private:
 		std::vector<Client *>		_user;
