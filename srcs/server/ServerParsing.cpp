@@ -299,6 +299,7 @@ void	Server::QUIT(int fd)
 	{
 		if (it->fd() == fd)
 		{
+			it->removeChannels();
 			Log::info("User " + it->nickname() + " disconnected");
 			//TODO broadcast the fact that the client disconnected to other clients
 			_clients.erase(it);
