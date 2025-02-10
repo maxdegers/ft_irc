@@ -21,6 +21,8 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	shareMessage(RPL_JOIN(creator->nickname(), _channelName), "");
 	Log::debug("User " + creator->getUsername() + " joined channel " + _channelName);
 	shareMessage(RPL_TOPIC(creator->nickname(), _channelName, _topic), "");
+	shareMessage(RPL_NAMREPLY(creator->nickname(), channelName, std::string("@"), creator->nickname()), "");
+	shareMessage(RPL_ENDOFNAMES(creator->nickname(), channelName), "");
 	creator->addChannel(this);
 }
 
@@ -37,6 +39,8 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	shareMessage(RPL_JOIN(creator->nickname(), _channelName), "");
 	Log::debug("User " + creator->getUsername() + " joined channel " + _channelName);
 	shareMessage(RPL_TOPIC(creator->nickname(), _channelName, _topic), "");
+	shareMessage(RPL_NAMREPLY(creator->nickname(), channelName, std::string("@"), creator->nickname()), "");
+	shareMessage(RPL_ENDOFNAMES(creator->nickname(), channelName), "");
 	creator->addChannel(this);
 }
 
@@ -96,9 +100,19 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 		newClient->addChannel(this);
 		if (std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()) != _invitedUsername.end())
 			_invitedUsername.erase(std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()));
-		Log::debug("User " + newClient->getUsername() + " joined channel " + _channelName);
-		shareMessage(RPL_JOIN(newClient->nickname(), _channelName), "");
+		Log::debug("User " + newClient->nickname() + " joined channel " + _channelName);
+		shareMessage(":" + newClient->nickname() + " JOIN " + _channelName + "\r\n", "");
 		error.assign(RPL_TOPIC(newClient->nickname(), _channelName, _topic));
+		send(newClient->fd(), error.c_str(), error.size(), 0);
+		for (std::vector<Client *>::iterator it = _user.begin(); it < _user.end(); it++)
+		{
+			if (checkUserOP(*it))
+				error.assign(RPL_NAMREPLY(newClient->nickname(), _channelName, "@", (*it)->nickname()));
+			else
+				error.assign(RPL_NAMREPLY(newClient->nickname(), _channelName, "", (*it)->nickname()));
+			send(newClient->fd(), error.c_str(), error.size(), 0);
+		}
+		error.assign(RPL_ENDOFNAMES(newClient->nickname(), _channelName));
 		send(newClient->fd(), error.c_str(), error.size(), 0);
 		return ;
 	}
@@ -319,15 +333,15 @@ void Channel::listUsers(Client *client)
 {
 	std::string msg;
 
-	for (std::vector<Client *>::iterator it = _user.begin(); it < _user.end(); it++)
+	for (std::vector<Client *>::iterator it = _user.begin(); it != _user.end(); ++it)
 	{
 		if (checkUserOP(*it))
-			msg.assign(RPL_NAMREPLY((*it)->nickname(), _channelName, "@"));
+			msg.assign(RPL_WHOREPLY(client->nickname(), _channelName, (*it)->getUsername(), (*it)->ip(), (*it)->nickname(), "@", "0", (*it)->realname()));
 		else
-			msg.assign(RPL_NAMREPLY((*it)->nickname(), _channelName, ""));
+			msg.assign(RPL_WHOREPLY(client->nickname(), _channelName, (*it)->getUsername(), (*it)->ip(), (*it)->nickname(), "", "0", (*it)->realname()));
 		send(client->fd(), msg.c_str(), msg.size(), 0);
 	}
-	msg.assign(RPL_ENDOFNAMES(client->nickname(), _channelName));
+	msg.assign(RPL_ENDOFWHO(client->nickname(), _channelName));
 	send(client->fd(), msg.c_str(), msg.size(), 0);
 }
 

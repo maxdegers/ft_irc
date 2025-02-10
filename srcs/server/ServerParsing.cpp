@@ -4,9 +4,11 @@
 #include <sstream>
 #include "Channel.hpp"
 #include "Client.hpp"
+#include <poll.h>
 #include <string>
 #include "Log.hpp"
 #include <sstream>
+#include <unistd.h>
 
 void Server::JOIN(std::string args, Client *client)
 {
@@ -70,7 +72,14 @@ void Server::TOPIC(const std::string &str, Client *client)
 	if (!(iss >> topic))
 		chan->displayTopic(client, false);
 	else
-		chan->setTopic(client, topic.substr(1, topic.size() - 1));
+	{
+		size_t two_dots = str.find(':');
+		if (std::string::npos == two_dots)
+			return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("TOPIC"));
+		std::string topic = str.substr(two_dots + 1, str.size());
+		Log::debug("Topic : " + topic);
+		chan->setTopic(client, topic);
+	}
 }
 
 void Server::PRIVMSG(const std::string &str, Client *client)
@@ -82,10 +91,11 @@ void Server::PRIVMSG(const std::string &str, Client *client)
 	if (!(iss >> destination >> message))
 		return client->sendError(client->fd(), ERR_NEEDMOREPARAMS("PRIVMSG"));
 
-	if (std::string::npos == str.find(':'))
+	size_t two_dots = str.find(':');
+	if (std::string::npos == two_dots)
 		return (client->sendError(client->fd(), ERR_NOTEXTTOSEND(client->nickname())));
-
-	std::string msg = str.substr(str.find(':'), str.size());
+	
+	std::string msg = str.substr(two_dots, str.size());
 	if ((destination.size() > 1) && (destination[0] == '&') )
 	{
 		Channel *channelDestination = findChannel(destination);
@@ -255,4 +265,27 @@ void Server::WHO(const std::string& args, Client *client)
 		Channel *channel = findChannel(tab[0]);
 		channel->listUsers(client);
 	}
+}
+
+void	Server::QUIT(int fd)
+{
+	for (std::vector<Client>::iterator it = _clients.begin(); it < _clients.end(); ++it)
+	{
+		if (it->fd() == fd)
+		{
+			//TODO broadcast the fact that the client disconnected to other clients
+			_clients.erase(it);
+			break ;
+		}
+	}
+	for (std::vector<struct pollfd>::iterator it = _fds.begin(); it < _fds.end(); ++it)
+	{
+		if (it->fd == fd)
+		{
+			_fds.erase(it);
+			break ;
+		}
+	}
+	close(fd);
+	Log::info("Client disconnected");
 }
