@@ -70,8 +70,6 @@ void	Server::executeCommand(const std::string &completeCommand, Client *client)
 			case CMD_USER:
 				client->USER(args);
 				break;
-			if (client->status() == REGISTERED)
-			{
 			case CMD_KICK:
 				KICK(args, client);
 				break;
@@ -99,7 +97,6 @@ void	Server::executeCommand(const std::string &completeCommand, Client *client)
 			default:
 				break;
 			}
-		}
     } else {
 		static std::string commands[] = {"CAP", "AUTHENTICATE", "PING", "PONG", "OPER", "ERROR", "NAMES", "MODT", \
 		"VERSION", "ADMIN", "CONNECT", "LUSERS", "TIME", "STATS", "HELP", "INFO", "NOTICE"};
