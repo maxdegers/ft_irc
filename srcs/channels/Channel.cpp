@@ -47,7 +47,7 @@ void	Channel::removeOp(Client *remover, Client *clientToRemove)
 		if (*i == clientToRemove && checkUserOP(remover))
 		{
 			_opUsers.erase(i);
-
+			shareMessage(RPL_ORMODE(_channelName, clientToRemove->nickname()), "");
 		}
 	}
 }
@@ -71,7 +71,10 @@ void	Channel::setTopicOP(Client *client, bool newRule)
 	if (checkUserOP(client))
 	{
 		_topicOpOnly = newRule;
-		shareMessage(RPL_MODE(_channelName, client->nickname(), "+t"), "");
+		if (newRule)
+			shareMessage(RPL_MODE(_channelName, client->nickname(), "+t"), "");
+		else
+			shareMessage(RPL_MODE(_channelName, client->nickname(), "-t"), "");
 	}
 	else
 	{
@@ -151,7 +154,13 @@ void	Channel::setPassword(Client *client, const std::string& newPassword)
 	std::string error;
 
 	if (checkUserOP(client))
+	{
 		_password = newPassword;
+		if (newPassword.empty())
+			shareMessage(RPL_MODE(_channelName, client->nickname(), "-k"), "");
+		else
+			shareMessage(RPL_MODE(_channelName, client->nickname(), "+k"), "");
+	}
 	else
 	{
 		error.assign(ERR_CHANOPRIVSNEEDED(client->getUsername(), _channelName));
