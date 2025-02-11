@@ -55,7 +55,7 @@ void	Channel::removeOp(Client *remover, Client *clientToRemove)
 
 void	Channel::shareMessage(const std::string& message, const std::string& nick)
 {
-	for (std::vector<Client *>::iterator i = _user.begin(); _user.empty() || i < _user.end(); i++)
+	for (std::vector<Client *>::iterator i = _user.begin(); !_user.empty() && i < _user.end(); i++)
 	{
 		if ((*i)->nickname() != nick)
 		{
