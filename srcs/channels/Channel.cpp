@@ -57,7 +57,8 @@ void	Channel::shareMessage(const std::string& message, const std::string& nick)
 {
 	for (std::vector<Client *>::iterator i = _user.begin(); !_user.empty() && i < _user.end(); i++)
 	{
-		if ((*i)->nickname() != nick)
+		std::cout << (*i)->nickname() << "'" << (*i)->fd() << "'" <<  std::endl;
+		if ((*i) && (*i)->nickname() != nick)
 		{
 			send((*i)->fd(), message.c_str(), message.size(), 0);
 			Log::debug("send message: '" + message + "' to " + (*i)->getUsername());
@@ -85,6 +86,12 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 {
 	std::string error;
 
+	if (checkUser(newClient))
+	{
+		error.assign(ERR_USERONCHANNEL(newClient->nickname(), newClient->nickname(), _channelName));
+		send(newClient->fd(), error.c_str(), error.size(), 0);
+		return ;
+	}
 	if (_password.empty() || _password == password)
 	{
 		if (_inviteOnly && std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()) == _invitedUsername.end())
