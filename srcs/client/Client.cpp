@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 
 /* Constructors ************************************************************* */
-Client::Client(int fd, const std::string &ip, Server *serv) : 	_server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip) {}
+Client::Client(int fd, const std::string &ip, Server *serv) : 	_server(serv), _fd(fd), _status(NOT_REGISTERED), _ip(ip), _hostname("irc_server") {}
 
 Client::~Client() {}
 
