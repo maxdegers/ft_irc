@@ -12,7 +12,7 @@ DFLAGS	=	-MMD -MF $(@:.o=.d)
 
 AUTHORS	=	mpitot, gberthol, mbrousse
 DEBUT	=	20/01/2025
-FIN		=	...
+FIN		=	11/02/2025
 
 all		:	header .internal_separate1 ${NAME}
 

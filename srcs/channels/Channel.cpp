@@ -42,10 +42,13 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 
 void	Channel::removeOp(Client *remover, Client *clientToRemove)
 {
-	for (std::vector<Client *>::iterator i = _opUsers.begin(); i != _opUsers.end(); i++)
+	for (std::vector<Client *>::iterator i = _opUsers.begin(); !_opUsers.empty() && i < _opUsers.end(); i++)
 	{
 		if (*i == clientToRemove && checkUserOP(remover))
+		{
 			_opUsers.erase(i);
+
+		}
 	}
 }
 

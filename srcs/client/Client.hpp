@@ -65,7 +65,7 @@ private:
 	std::string					_username;
 	std::string					_prefix;
 	std::string					_realname;
-	std::string					_hostname; //TODO Setup Hostname
+	std::string					_hostname;
 	std::string					_incompleteMessage;
 };
 

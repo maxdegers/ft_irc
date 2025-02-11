@@ -1,7 +1,3 @@
-//
-// Created by gberthol on 1/20/25.
-//
-
 #pragma once
 
 #include <iostream>
