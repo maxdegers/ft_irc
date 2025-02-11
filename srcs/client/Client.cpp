@@ -217,7 +217,7 @@ void Client::removeChannel(Channel *channel)
 
 void Client::removeChannels()
 {
-	for (std::vector<Channel *>::iterator it = _channels.begin(); !_channels.empty() || it < _channels.end(); it++)
+	for (std::vector<Channel *>::iterator it = _channels.begin(); !_channels.empty() && it < _channels.end(); it++)
 	{
 		(*it)->shareMessage(RPL_PART(_nickname, (*it)->getChannelName(), ""), "");
 		(*it)->removeUser(_nickname);
