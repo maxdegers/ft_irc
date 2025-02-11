@@ -17,14 +17,11 @@ public:
 	Server(const Server &src);
 	~Server();
 
-/* Operators */
-	Server &operator=(const Server &src);
-
 /* Getters */
 	int port() const;
 	int socketFD() const;
 	std::string getPassword();
-	std::vector<Client> clients() const;
+	std::vector<Client *> clients() const;
 	std::vector<struct ::pollfd> fds() const;
 
 /* Methods */
@@ -59,9 +56,9 @@ private:
 	int							_port;
 	int							_socketFD;
 	static bool					_signal;
-	std::vector<Client>			_clients;
+	std::vector<Client *>		_clients;
 	std::vector<struct pollfd>	_fds;
-	std::vector<Channel>		_channels;
+	std::vector<Channel *>		_channels;
 
 	typedef enum Command {
 		CMD_KICK,

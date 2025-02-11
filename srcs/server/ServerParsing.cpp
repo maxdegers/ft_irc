@@ -67,13 +67,13 @@ void Server::JOIN(std::string args, Client *client)
 		}
 		if (tab.size() == 1)
 		{
-			_channels.push_back(Channel(client, tab[0], _hostname));
-			client->addChannel(&_channels.back());
+			_channels.push_back(new Channel(client, tab[0], _hostname));
+			client->addChannel(_channels.back());
 		}
 		else
 		{
-			_channels.push_back(Channel(client, tab[0], _hostname, tab[1]));
-			client->addChannel(&_channels.back());
+			_channels.push_back(new Channel(client, tab[0], _hostname, tab[1]));
+			client->addChannel(_channels.back());
 		}
 	}
 }
@@ -161,10 +161,10 @@ void Server::INVITE(const std::string &cmd, Client *client)
 		return client->sendError(client->fd(), ERR_NOTONCHANNEL(chanName));
 	if (!chan->checkUserOP(client))
 		return client->sendError(client->fd(), ERR_CHANOPRIVSNEEDED(client->getUsername(), chanName));
-	for (std::vector<Client>::iterator it = _clients.begin(); it != _clients.end(); it++)
+	for (std::vector<Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 	{
-		if ((*it).nickname() == cmd.substr(0, cmd.find(' ')))
-			chan->inviteUser(client, &(*it));
+		if ((*it)->nickname() == cmd.substr(0, cmd.find(' ')))
+			chan->inviteUser(client, *it);
 	}
 }
 
@@ -301,13 +301,14 @@ void Server::WHO(const std::string& args, Client *client)
 
 void	Server::QUIT(int fd)
 {
-	for (std::vector<Client>::iterator it = _clients.begin(); it < _clients.end(); ++it)
+	for (std::vector<Client *>::iterator it = _clients.begin(); it < _clients.end(); ++it)
 	{
-		if (it->fd() == fd)
+		if ((*it)->fd() == fd)
 		{
-			std::cout << it->nickname() << std::endl;
-			it->removeChannels();
-			Log::info("User " + it->nickname() + " disconnected");
+			// std::cout << (*it)->nickname() << std::endl;
+			(*it)->removeChannels();
+			Log::info("User " + (*it)->nickname() + " disconnected");
+			delete *it;
 			_clients.erase(it);
 			break ;
 		}

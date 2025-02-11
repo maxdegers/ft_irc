@@ -69,7 +69,7 @@ void	Server::acceptClient()
 	Client *client = findClient(incofd);
 	if (client)
 		QUIT(incofd);
-	_clients.push_back(Client(incofd, inet_ntoa(clientAddr.sin_addr), this));
+	_clients.push_back(new Client(incofd, inet_ntoa(clientAddr.sin_addr), this));
 	_fds.push_back(newPoll);
 }
 

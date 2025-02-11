@@ -29,18 +29,17 @@ Server::Server(const Server &src)
 
 Server::~Server()
 {
+	for (std::vector<Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+	{
+		delete *it;
+	}
+	for (std::vector<Channel *>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+	{
+		delete *it;
+	}
+	_clients.clear();
+	_channels.clear();
 	closeFDs();
-}
-
-/* Operators **************************************************************** */
-Server &Server::operator=(const Server &src)
-{
-	_port = src.port();
-	_socketFD = src.socketFD();
-	_clients = src.clients();
-	_fds = src.fds();
-
-	return (*this);
 }
 
 /* Getters ****************************************************************** */
@@ -54,7 +53,7 @@ int Server::socketFD() const
 	return (_socketFD);
 }
 
-std::vector<Client> Server::clients() const
+std::vector<Client *> Server::clients() const
 {
 	return (_clients);
 }
@@ -114,8 +113,8 @@ Client	*Server::findClient(int fd)
 {
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
-		if (_clients[i].fd() == fd)
-			return (&_clients[i]);
+		if (_clients[i]->fd() == fd)
+			return (_clients[i]);
 	}
 	return (NULL);
 }
@@ -124,8 +123,8 @@ Client	*Server::findClient(std::string name)
 {
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
-		if (_clients[i].nickname() == name)
-			return (&_clients[i]);
+		if (_clients[i]->nickname() == name)
+			return (_clients[i]);
 	}
 	return (NULL);
 }
@@ -134,8 +133,8 @@ Channel	*Server::findChannel(const std::string &name)
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		if (_channels[i].getChannelName() == name)
-			return (&_channels[i]);
+		if (_channels[i]->getChannelName() == name)
+			return (_channels[i]);
 	}
 	return (NULL);
 }
@@ -144,7 +143,7 @@ bool	Server::checkNick(const std::string& nick)
 {
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
-		if (_clients[i].nickname() == nick)
+		if (_clients[i]->nickname() == nick)
 		{
 			return (true);
 		}

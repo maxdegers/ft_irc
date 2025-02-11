@@ -1,7 +1,3 @@
-//
-// Created by gberthol on 1/20/25.
-//
-
 #include "Channel.hpp"
 #include "Client.hpp"
 #include <sys/socket.h>
