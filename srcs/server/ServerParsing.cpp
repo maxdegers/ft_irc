@@ -305,7 +305,6 @@ void	Server::QUIT(int fd)
 	{
 		if ((*it)->fd() == fd)
 		{
-			// std::cout << (*it)->nickname() << std::endl;
 			(*it)->removeChannels();
 			Log::info("User " + (*it)->nickname() + " disconnected");
 			delete *it;

@@ -53,7 +53,6 @@ void	Channel::shareMessage(const std::string& message, const std::string& nick)
 {
 	for (std::vector<Client *>::iterator i = _user.begin(); !_user.empty() && i < _user.end(); i++)
 	{
-		std::cout << (*i)->nickname() << "'" << (*i)->fd() << "'" <<  std::endl;
 		if ((*i) && (*i)->nickname() != nick)
 		{
 			send((*i)->fd(), message.c_str(), message.size(), 0);
@@ -357,14 +356,11 @@ void Channel::listUsers(Client *client)
 // FONCTION A NE PAS SE SERVIR POUR UN CLIENT TOUJOURS CONNECTE
 void Channel::removeUser(const std::string &name)
 {
-	std::cout << _user.size() << std::endl;
-
 	for (std::vector<Client *>::iterator i = _user.begin(); _user.empty() || i < _user.end(); i++)
 	{
 		if ((*i)->nickname() == name)
 		{
-			Log::info("client: " + name + "is now disconnected");
-			shareMessage(RPL_KICKED(name, _channelName, name), "");
+			shareMessage(RPL_KICKED(name, _channelName, name), name);
 			_user.erase(i);
 			return;
 		}
