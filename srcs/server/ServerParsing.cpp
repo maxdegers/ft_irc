@@ -301,13 +301,14 @@ void Server::WHO(const std::string& args, Client *client)
 
 void	Server::QUIT(int fd)
 {
+	std::cout << _clients.size() << std::endl;
 	for (std::vector<Client>::iterator it = _clients.begin(); it < _clients.end(); ++it)
 	{
 		if (it->fd() == fd)
 		{
+			std::cout << it->nickname() << std::endl;
 			it->removeChannels();
 			Log::info("User " + it->nickname() + " disconnected");
-			//TODO broadcast the fact that the client disconnected to other clients
 			_clients.erase(it);
 			break ;
 		}
@@ -321,4 +322,9 @@ void	Server::QUIT(int fd)
 		}
 	}
 	close(fd);
+	///////////////////////////////
+	for (std::vector<Client>::iterator it = _clients.begin(); it < _clients.end(); ++it)
+	{
+		Log::debug(it->nickname() + "\n");
+	}
 }

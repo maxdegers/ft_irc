@@ -217,12 +217,12 @@ void Client::removeChannel(Channel *channel)
 
 void Client::removeChannels()
 {
-	std::cout << _channels.size() << std::endl;
-	std::cout << _channels[0]->getUserAmout() << std::endl;
+	if (_channels.empty())
+		return ;
 	for (std::vector<Channel *>::iterator it = _channels.begin(); _channels.empty() || it < _channels.end(); it++)
 	{
-		std::cout << (*it)->getUserAmout() << std::endl;
-		(*it)->removeUser(this->nickname());
+		(*it)->shareMessage(RPL_PART(_nickname, (*it)->getChannelName(), ""), "");
+		(*it)->removeUser(_nickname);
 	}
 	_channels.clear();
 }

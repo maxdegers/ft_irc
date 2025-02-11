@@ -44,10 +44,10 @@ public:
 	static void		signalHandler(int sig);
 
 	void			closeFDs();
-	void			QUIT(int fd);
 
 /* Exceptions */
-	class ArgumentsErrorException : public std::exception
+
+class ArgumentsErrorException : public std::exception
 	{
 	public:
 		virtual const char *what() const throw();
@@ -77,13 +77,15 @@ private:
 		CMD_WHO,
 		CMD_UNKNOWN // Pour les commandes non reconnues
 	} 			ecmd;
-	std::map<std::string, ecmd> _commandMap;
+
+std::map<std::string, ecmd> _commandMap;
 
 
-	void separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args);
-	void truncCarriageReturns(std::string &str);
-	std::vector<std::string> split(const std::string &str, char delimiter);
+	std::vector<std::string>	split(const std::string &str, char delimiter);
+	void						separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args);
+	void						truncCarriageReturns(std::string &str);
 
+	void QUIT(int fd);
 	void JOIN(std::string args, Client *client);
 	void TOPIC(const std::string &str, Client *client);
 	void PRIVMSG(const std::string &str, Client *client);
