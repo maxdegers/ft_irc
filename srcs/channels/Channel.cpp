@@ -53,9 +53,9 @@ void	Channel::shareMessage(const std::string& message, const std::string& nick)
 {
 	for (std::vector<Client *>::iterator i = _user.begin(); !_user.empty() && i < _user.end(); i++)
 	{
-		if ((*i) && (*i)->nickname() != nick)
+		if ((*i)->nickname() != nick)
 		{
-			send((*i)->fd(), message.c_str(), message.size(), 0);
+			send((*i)->fd(), message.c_str(), message.size(), 0x4000);
 			Log::debug("send message: '" + message + "' to " + (*i)->getUsername());
 		}
 	}
@@ -360,7 +360,7 @@ void Channel::removeUser(const std::string &name)
 	{
 		if ((*i)->nickname() == name)
 		{
-			shareMessage(RPL_KICKED(name, _channelName, name), name);
+			// shareMessage(RPL_KICKED(name, _channelName, name), name);
 			_user.erase(i);
 			return;
 		}
