@@ -94,7 +94,7 @@ void Server::TOPIC(const std::string &str, Client *client)
 	if (!chan)
 		return client->sendError(client->fd(), ERR_NOSUCHCHANNEL(channel));
 	if (!(iss >> topic))
-		chan->displayTopic(client, false);
+		chan->displayTopic(client, false, true);
 	else
 	{
 		size_t two_dots = str.find(':');
@@ -184,6 +184,8 @@ void Server::MODE(const std::string &cmd, Client *client)
 		return client->sendError(client->fd(), ERR_NOTONCHANNEL(all_args.at(0)));
 	if (!chan->checkUserOP(client))
 		return client->sendError(client->fd(), ERR_CHANOPRIVSNEEDED(client->getUsername(), all_args.at(0)));
+	if (all_args.size() == 1)
+		return chan->displayMode(client);
 	for (std::vector<std::string>::iterator it = all_args.begin() + 1; it != all_args.end(); it++)
 	{
 		if (((*it).at(0) == '-' || (*it).at(0) == '+') && (*it).size() == 2)
