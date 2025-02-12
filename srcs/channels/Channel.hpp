@@ -22,9 +22,9 @@ class Channel
 
 		std::string	getChannelName() const;
 
-		void	removeOp(Client *remover, Client *clientToRemove);
+		void	removeOp(Client *remover, Client *clientToRemove, bool sendMsg);
 		void	kickUser(Client *kicker, Client *toKick);
-		size_t	getUserAmout();
+		size_t	getUserAmount();
 
 		void	tryToJoin(Client *newClient, const std::string& password);
 		void	addOp(Client *adder, Client *clientToAdd);

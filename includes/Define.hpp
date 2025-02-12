@@ -41,7 +41,7 @@
 #define ERR_UNKNOWNMODE(nick, channel, c) (":irc_server 472 "+ (nick) + " " + (channel) + " " + (c) + " :is unknown mode char to me\r\n")
 #define ERR_NEEDMODPARAMS(nick, channel, command) (":irc_server 461 " + (nick) + " " + (channel) + " " + (std::string(command)) + " :Not enough parameters\r\n")
 #define RPL_CHANNELMODEIS(nick, channel, mode) (":irc_server 324 " + (nick) + " " + (channel) + " " + (mode) + "\r\n")
-#define RPL_MODE(channel, nick, message) (":" + (nick) + " MODE " + (channel) + (message))
+#define RPL_MODE(channel, nick, message) (":" + (nick) + " MODE " + (channel) + (message) + " \r\n")
 #define RPL_OMODE(channel, nick) (":irc_server MODE " + (channel) + " +o " + (nick) + " \r\n")
 #define RPL_ORMODE(channel, nick) (":irc_server MODE " + (channel) + " -o " + (nick) + " \r\n")
 #define RPL_LMODE(channel, nick, message, number) (":" + (nick) + " MODE " + (channel) + (message) + (number) + "\r\n")

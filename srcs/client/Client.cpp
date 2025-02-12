@@ -149,7 +149,7 @@ void Client::NICK(const std::string &str) {
 	if (!_username.empty()) {
 		_status = REGISTERED;
 		sendMessage(RPL_WELCOME(_nickname, _nickname), this);
-		Log::info("User " + _nickname + " registered");
+		Log::info("User [" + _nickname + "] registered");
 		return ;
 	}
 }
@@ -192,7 +192,7 @@ void Client::USER(const std::string &str) {
 		this->_prefix = this->_nickname + "!" + this->_username + "@" + this->_hostname;
 		this->_status = REGISTERED;
 		sendMessage(RPL_WELCOME(this->_nickname, this->_nickname), this);
-		Log::info("User " + _nickname + " registered");
+		Log::info("User [" + _nickname + "] registered");
 		return ;
 
 	}
@@ -219,7 +219,7 @@ void Client::removeChannels()
 {
 	for (std::vector<Channel *>::iterator it = _channels.begin(); !_channels.empty() && it < _channels.end(); it++)
 	{
-		(*it)->shareMessage(RPL_PART(_nickname, (*it)->getChannelName(), ""), _nickname);
+		(*it)->shareMessage(RPL_PART(_nickname, (*it)->getChannelName(), ""), "");
 		(*it)->removeUser(_nickname);
 	}
 	_channels.clear();

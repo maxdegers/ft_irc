@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Log.hpp"
 #include <iostream>
 #include <sstream>
 #include <csignal>
@@ -164,6 +165,21 @@ void	Server::closeFDs()
 {
 	for (int i = 3; i < 1024; i++)
 		close(i);
+}
+
+void	Server::deleteUnusedChannels()
+{
+	for (std::vector<Channel *>::iterator it = _channels.begin(); it != _channels.end();)
+	{
+		if ((*it)->getUserAmount() == 0)
+		{
+			Log::info("Channel [" + (*it)->getChannelName() + "] deleted");
+			delete *it;
+			_channels.erase(it);
+		}
+		else
+			++it;
+	}
 }
 
 /* Exceptions *************************************************************** */

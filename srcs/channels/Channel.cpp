@@ -15,8 +15,8 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	_maxUsers = 0;
 	_serverIP = serverIP;
 	shareMessage(RPL_JOIN(creator->nickname(), _channelName), "");
-	Log::info("User " + creator->getUsername() + " created channel " + _channelName);
-	Log::info("User " + creator->getUsername() + " joined channel " + _channelName);
+	Log::info("User [" + creator->getUsername() + "] created channel [" + _channelName + "]");
+	Log::info("User [" + creator->getUsername() + "] joined channel [" + _channelName + "]");
 	shareMessage(RPL_TOPIC(creator->nickname(), _channelName, _topic), "");
 	shareMessage(RPL_NAMREPLY(creator->nickname(), channelName, std::string("@"), creator->nickname()), "");
 	shareMessage(RPL_ENDOFNAMES(creator->nickname(), channelName), "");
@@ -33,21 +33,22 @@ Channel::Channel(Client *creator, const std::string& channelName, const std::str
 	_serverIP = serverIP;
 	_password = password;
 	shareMessage(RPL_JOIN(creator->nickname(), _channelName), "");
-	Log::info("User " + creator->getUsername() + " created channel " + _channelName);
-	Log::info("User " + creator->getUsername() + " joined channel " + _channelName);
+	Log::info("User [" + creator->getUsername() + "] created channel [" + _channelName + "] with keyword \"" + password + "\"");
+	Log::info("User [" + creator->getUsername() + "] joined channel [" + _channelName + "]");
 	shareMessage(RPL_TOPIC(creator->nickname(), _channelName, _topic), "");
 	shareMessage(RPL_NAMREPLY(creator->nickname(), channelName, std::string("@"), creator->nickname()), "");
 	shareMessage(RPL_ENDOFNAMES(creator->nickname(), channelName), "");
 }
 
-void	Channel::removeOp(Client *remover, Client *clientToRemove)
+void	Channel::removeOp(Client *remover, Client *clientToRemove, bool sendMsg)
 {
 	for (std::vector<Client *>::iterator i = _opUsers.begin(); !_opUsers.empty() && i < _opUsers.end(); i++)
 	{
 		if (*i == clientToRemove && checkUserOP(remover))
 		{
 			_opUsers.erase(i);
-			shareMessage(RPL_ORMODE(_channelName, clientToRemove->nickname()), "");
+			if (sendMsg)
+				shareMessage(RPL_ORMODE(_channelName, clientToRemove->nickname()), "");
 		}
 	}
 }
@@ -111,7 +112,7 @@ void	Channel::tryToJoin(Client *newClient, const std::string& password)
 		newClient->addChannel(this);
 		if (std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()) != _invitedUsername.end())
 			_invitedUsername.erase(std::find(_invitedUsername.begin(), _invitedUsername.end(), newClient->getUsername()));
-		Log::info("User " + newClient->nickname() + " joined channel " + _channelName);
+		Log::info("User [" + newClient->nickname() + "] joined channel [" + _channelName + "]");
 		shareMessage(":" + newClient->nickname() + " JOIN " + _channelName + "\r\n", "");
 		error.assign(RPL_TOPIC(newClient->nickname(), _channelName, _topic));
 		send(newClient->fd(), error.c_str(), error.size(), 0);
@@ -374,12 +375,13 @@ void Channel::removeUser(const std::string &name)
 		{
 			// shareMessage(RPL_KICKED(name, _channelName, name), name);
 			_user.erase(i);
+			removeOp(*i, *i, false);
 			return;
 		}
 	}
 }
 
-size_t Channel::getUserAmout()
+size_t Channel::getUserAmount()
 {
 	return _user.size();
 }

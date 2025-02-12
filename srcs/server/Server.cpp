@@ -46,6 +46,7 @@ void	Server::run()
 					readData(_fds[i].fd); // executing the commands straight from in there
 			}
 		}
+		deleteUnusedChannels();
 	}
 	Log::info("Server is down.");
 }

@@ -222,7 +222,7 @@ void Server::MODE(const std::string &cmd, Client *client)
 				if (findClient(*it))
 				{
 					if (!isPlus)
-						chan->removeOp(client, findClient(*it));
+						chan->removeOp(client, findClient(*it), true);
 					else
 						chan->addOp(client, findClient(*it));
 				}

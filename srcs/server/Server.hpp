@@ -75,12 +75,12 @@ private:
 		CMD_UNKNOWN // Pour les commandes non reconnues
 	} 			ecmd;
 
-std::map<std::string, ecmd> _commandMap;
-
+	std::map<std::string, ecmd> _commandMap;
 
 	std::vector<std::string>	split(const std::string &str, char delimiter);
 	void						separateCmdArg(const std::string &completeCommand, std::string &command, std::string &args);
 	void						truncCarriageReturns(std::string &str);
+	void						deleteUnusedChannels();
 
 	void QUIT(int fd);
 	void JOIN(std::string args, Client *client);
