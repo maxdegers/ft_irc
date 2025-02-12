@@ -308,7 +308,7 @@ void	Server::QUIT(int fd)
 		if ((*it)->fd() == fd)
 		{
 			(*it)->removeChannels();
-			Log::info("User " + (*it)->nickname() + " disconnected");
+			Log::info("User [" + (*it)->nickname() + "] disconnected");
 			delete *it;
 			_clients.erase(it);
 			break ;
