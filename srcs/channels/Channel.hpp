@@ -38,7 +38,8 @@ class Channel
 		bool	checkUserOP(Client *clientToCheck);
 		bool	checkUser(Client *clientToCheck);
 
-		void	displayTopic(Client *client, bool toAll);
+		void	displayTopic(Client *client, bool toAll, bool noTopic);
+		void	displayMode(Client *client);
 
 		void	listUsers(Client *client);
 

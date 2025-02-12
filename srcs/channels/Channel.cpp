@@ -140,7 +140,10 @@ void	Channel::setMaxUser(Client *client, unsigned long newMax)
 	if (checkUserOP(client))
 	{
 		_maxUsers = newMax;
-		shareMessage(RPL_CHANNELMODEIS(client->nickname(), _channelName, "+l"), "");
+		if (!newMax)
+			shareMessage(RPL_CHANNELMODEIS(client->nickname(), _channelName, "-l"), "");
+		else
+			shareMessage(RPL_CHANNELMODEIS(client->nickname(), _channelName, "+l"), "");
 	}
 	else
 	{
@@ -176,12 +179,12 @@ void	Channel::setTopic(Client *clientWhoSetTopic, const std::string& newTopic)
 	if (_topicOpOnly && checkUserOP(clientWhoSetTopic))
 	{
 		_topic = newTopic;
-		displayTopic(clientWhoSetTopic, true);
+		displayTopic(clientWhoSetTopic, true, false);
 	}
 	else if (!_topicOpOnly && checkUser(clientWhoSetTopic))
 	{
 		_topic = newTopic;
-		displayTopic(clientWhoSetTopic, true);
+		displayTopic(clientWhoSetTopic, true, false);
 	}
 	else if (!checkUser(clientWhoSetTopic))
 	{
@@ -275,8 +278,11 @@ void	Channel::addOp(Client *adder, Client *clientToAdd)
 	Log::debug(adder->nickname() + " try to add " + clientToAdd->nickname() + "at the operator list");
 	if (checkUserOP(adder))
 	{
-		_opUsers.push_back(clientToAdd);
-		shareMessage(RPL_OMODE(_channelName, clientToAdd->nickname()), "");
+		if (!checkUserOP(clientToAdd))
+		{
+			_opUsers.push_back(clientToAdd);
+			shareMessage(RPL_OMODE(_channelName, clientToAdd->nickname()), "");
+		}
 	}
 	else
 	{
@@ -333,11 +339,11 @@ void Channel::inviteUser(Client *host, Client *guest)
 	send(guest->fd(), awnser.c_str(), awnser.size(), 0);
 }
 
-void Channel::displayTopic(Client *client, bool toAll)
+void Channel::displayTopic(Client *client, bool toAll, bool noTopic)
 {
 	std::string msg;
 
-	if (_topic.empty())
+	if (_topic.empty() && noTopic)
 		msg.assign(RPL_NOTOPIC(client->getUsername(), _channelName));
 	else
 		msg.assign(RPL_TOPIC(client->getUsername(), _channelName, _topic));
@@ -386,4 +392,15 @@ void Channel::removeUser(const std::string &name)
 size_t Channel::getUserAmount()
 {
 	return _user.size();
+}
+
+void Channel::displayMode(Client *client)
+{
+	std::string msg(":irc_server MODE");
+	msg += (_topicOpOnly) ? " +t" : " -t";
+	msg += (_inviteOnly) ? " +i" : " -i";
+	msg += (_password.empty()) ? "" : " +k";
+	msg += (_maxUsers) ? " +l" : "";
+	msg +="\r\n";
+	send(client->fd(), msg.c_str(), msg.size(), 0);
 }
