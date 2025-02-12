@@ -295,8 +295,6 @@ void Channel::kickUser(Client *kicker, Client *toKick, std::string msg)
 {
 	std::string error;
 
-	if (!msg.empty())
-		msg = ":" + msg;
 	if (checkUserOP(kicker))
 	{
 		for (std::vector<Client *>::iterator i = _user.begin(); i < _user.end(); i++)
