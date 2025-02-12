@@ -97,14 +97,14 @@ void	Server::truncCarriageReturns(std::string &str)
 	}
 }
 
-std::vector<std::string> Server::split(const std::string& str, char delimiter) {
+std::vector<std::string> Server::split(const std::string& str, char delimiter)
+{
 	std::vector<std::string> result;
 	std::string token;
 	std::istringstream tokenStream(str);
 
-	while (std::getline(tokenStream, token, delimiter)) {
+	while (std::getline(tokenStream, token, delimiter))
 		result.push_back(token);
-	}
 
 	return result;
 }

@@ -285,17 +285,19 @@ void	Channel::addOp(Client *adder, Client *clientToAdd)
 	}
 }
 
-void Channel::kickUser(Client *kicker, Client *toKick)
+void Channel::kickUser(Client *kicker, Client *toKick, std::string msg)
 {
 	std::string error;
 
+	if (!msg.empty())
+		msg = ":" + msg;
 	if (checkUserOP(kicker))
 	{
 		for (std::vector<Client *>::iterator i = _user.begin(); i < _user.end(); i++)
 		{
 			if (*i == toKick)
 			{
-				shareMessage(RPL_KICKED(kicker->nickname(), _channelName, toKick->nickname()), "");
+				shareMessage(RPL_KICKED(kicker->nickname(), _channelName, toKick->nickname(), msg), "");
 				_user.erase(i);
 				toKick->removeChannel(this);
 			}

@@ -280,7 +280,11 @@ void Server::KICK(std::string args, Client* client)
 		client->sendMessage(ERR_CHANOPRIVSNEEDED(client->nickname(), argsList[0]), client);
 		return ;
 	}
-	channel->kickUser(client, clientTarget);
+	std::string::size_type two_dots = args.find(':');
+	if (two_dots == std::string::npos)
+		channel->kickUser(client, clientTarget, "");
+	else
+		channel->kickUser(client, clientTarget, args.substr(two_dots, args.size()));
 }
 
 void Server::WHO(const std::string& args, Client *client)

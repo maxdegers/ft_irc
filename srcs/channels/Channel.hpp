@@ -23,7 +23,7 @@ class Channel
 		std::string	getChannelName() const;
 
 		void	removeOp(Client *remover, Client *clientToRemove, bool sendMsg);
-		void	kickUser(Client *kicker, Client *toKick);
+		void	kickUser(Client *kicker, Client *toKick, std::string msg);
 		size_t	getUserAmount();
 
 		void	tryToJoin(Client *newClient, const std::string& password);

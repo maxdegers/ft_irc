@@ -31,7 +31,7 @@
 
 //Kick
 #define ERR_USERNOTINCHANNEL(nick, channel, target) (":irc_server 441 " + (nick) + " " + (channel) + " " + (target) + " :They aren't on that channel\r\n")
-#define RPL_KICKED(client, channel, kicked) (":" + (client) + " KICK " + (channel) + " " + (kicked) + "\r\n")
+#define RPL_KICKED(client, channel, kicked, msg) (":" + (client) + " KICK " + (channel) + " " + (kicked) + (msg) + "\r\n")
 
 //Who
 #define RPL_WHOREPLY(client, channel, username, host, nick, status, hopcount, realname) (":irc_server 352 " + (client) + " " + (channel) + " " + (username) + " " + (host) + " irc_server " + (nick) + " " + (status) + " :" + (hopcount) + " " + (realname) + "\r\n")
